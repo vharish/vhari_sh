@@ -1,0 +1,6 @@
+# PROVIDER-SPECIFIC: Cloudflare Pages
+# Delete this file when switching providers.
+# build/ is plain static HTML/CSS/JS — host anywhere.
+name = "vhari-sh"
+pages_build_output_dir = "./build"
+compatibility_date = "2026-03-02"
