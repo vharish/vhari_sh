@@ -27,29 +27,33 @@
 	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap" rel="stylesheet" />
 </svelte:head>
 
-<div class="term">
+<!-- nebula background -->
+<div class="scene">
 
-	<!-- TOP BAR — like a tmux status bar -->
-	<header class="topbar">
-		<div class="topbar-left">
-			<span class="tb-session">tmux: harish@vhari.sh</span>
-			<span class="tb-sep">│</span>
-			<span class="tb-window active-window">0: ~</span>
-			<span class="tb-window">1: projects</span>
-			<span class="tb-window">2: music</span>
-		</div>
-		<div class="topbar-right">
-			<span class="tb-info">vhari.sh</span>
-			<span class="tb-sep">│</span>
-			<span class="tb-time">{clockText}</span>
-		</div>
-	</header>
+	<!-- CRT screen: topbar + scrollable content + statusbar -->
+	<div class="crt">
 
-	<!-- MAIN PANE AREA -->
-	<div class="panes">
+		<!-- scanline overlay -->
+		<div class="crt-scanlines" aria-hidden="true"></div>
 
-		<!-- LEFT / MAIN PANE -->
-		<main class="pane pane-main">
+		<!-- TOP BAR -->
+		<header class="topbar">
+			<div class="topbar-left">
+				<span class="tb-session">tmux: harish@vhari.sh</span>
+				<span class="tb-sep">│</span>
+				<span class="tb-window active-window">0: ~</span>
+				<span class="tb-window">1: projects</span>
+				<span class="tb-window">2: music</span>
+			</div>
+			<div class="topbar-right">
+				<span class="tb-info">vhari.sh</span>
+				<span class="tb-sep">│</span>
+				<span class="tb-time">{clockText}</span>
+			</div>
+		</header>
+
+		<!-- SCROLLABLE CONTENT -->
+		<main class="crt-body">
 
 			<!-- neofetch-style block -->
 			<section class="fetch-block">
@@ -77,7 +81,7 @@
 				</div>
 			</section>
 
-			<!-- about section -->
+			<!-- about -->
 			<section class="pane-section">
 				<h2 class="section-header">
 					<span class="c-green">❯</span>
@@ -95,7 +99,7 @@
 				</div>
 			</section>
 
-			<!-- projects section -->
+			<!-- projects -->
 			<section class="pane-section">
 				<h2 class="section-header">
 					<span class="c-green">❯</span>
@@ -108,9 +112,7 @@
 					</div>
 					<a href="https://dj.vhari.sh" target="_blank" rel="noopener noreferrer" class="ls-row">
 						<span class="ls-perms c-comment">drwxr-xr-x</span>
-						<span class="ls-name">
-							<span class="c-green">dj/</span>
-						</span>
+						<span class="ls-name"><span class="c-green">dj/</span></span>
 						<span class="ls-desc c-fg">DDJ-400 interactive controller map — built to learn to DJ</span>
 						<span class="ls-tags">
 							<span class="tag">vanilla-js</span>
@@ -122,7 +124,7 @@
 				</div>
 			</section>
 
-			<!-- links section -->
+			<!-- links -->
 			<section class="pane-section">
 				<h2 class="section-header">
 					<span class="c-green">❯</span>
@@ -143,83 +145,81 @@
 
 		</main>
 
-		<!-- RIGHT PANE — sidebar -->
-		<aside class="pane pane-side">
+		<!-- STATUS BAR -->
+		<footer class="statusbar">
+			<div class="sb-left">
+				<span class="sb-mode">NORMAL</span>
+				<span class="sb-sep">│</span>
+				<span class="c-fg">~/vhari.sh</span>
+			</div>
+			<div class="sb-center">
+				<span class="c-comment">day dreamer.. in love with everything there is.</span>
+			</div>
+			<div class="sb-right">
+				<span class="c-comment">made with love &amp; zero apologies</span>
+				<span class="sb-sep">│</span>
+				<span class="c-fg">est. 2026</span>
+			</div>
+		</footer>
 
-			<!-- now playing -->
-			<section class="side-section">
-				<h3 class="side-header">
-					<span class="c-green">♪</span>
-					<span>now_playing</span>
-				</h3>
-				<div class="side-body player-body">
-					<iframe
-						src={bandcampEmbedUrl}
-						title="Bandcamp player"
-						seamless
-						class="bandcamp-player"
-					></iframe>
+	</div><!-- /.crt -->
+
+	<!-- SIDEBAR — floats outside the CRT -->
+	<aside class="sidebar">
+
+		<section class="side-section">
+			<h3 class="side-header">
+				<span class="c-green">♪</span>
+				<span>now_playing</span>
+			</h3>
+			<div class="side-body player-body">
+				<iframe
+					src={bandcampEmbedUrl}
+					title="Bandcamp player"
+					seamless
+					class="bandcamp-player"
+				></iframe>
+			</div>
+		</section>
+
+		<div class="side-spacer"></div>
+
+		<section class="side-section">
+			<h3 class="side-header">
+				<span class="c-green">$</span>
+				<span>sys.info</span>
+			</h3>
+			<div class="side-body sysinfo-body">
+				<div class="sysinfo-row">
+					<span class="si-key c-comment">location</span>
+					<span class="si-val c-fg">Earth, Sol system</span>
 				</div>
-			</section>
-
-			<div class="side-spacer"></div>
-
-			<!-- system info widget -->
-			<section class="side-section">
-				<h3 class="side-header">
-					<span class="c-green">$</span>
-					<span>sys.info</span>
-				</h3>
-				<div class="side-body sysinfo-body">
-					<div class="sysinfo-row">
-						<span class="si-key c-comment">location</span>
-						<span class="si-val c-fg">Earth, Sol system</span>
-					</div>
-					<div class="sysinfo-row">
-						<span class="si-key c-comment">status</span>
-						<span class="si-val"><span class="c-green">●</span> online</span>
-					</div>
-					<div class="sysinfo-row">
-						<span class="si-key c-comment">build</span>
-						<span class="si-val c-fg">SvelteKit + Tailwind v4</span>
-					</div>
-					<div class="sysinfo-row">
-						<span class="si-key c-comment">host</span>
-						<span class="si-val c-fg">Cloudflare Pages</span>
-					</div>
-					<div class="sysinfo-row">
-						<span class="si-key c-comment">src</span>
-						<span class="si-val c-blue"><a href="https://github.com/vharish/vhari_sh" target="_blank" rel="noopener noreferrer">vharish/vhari_sh ↗</a></span>
-					</div>
+				<div class="sysinfo-row">
+					<span class="si-key c-comment">status</span>
+					<span class="si-val"><span class="c-green">●</span> online</span>
 				</div>
-			</section>
+				<div class="sysinfo-row">
+					<span class="si-key c-comment">build</span>
+					<span class="si-val c-fg">SvelteKit + Tailwind v4</span>
+				</div>
+				<div class="sysinfo-row">
+					<span class="si-key c-comment">host</span>
+					<span class="si-val c-fg">Cloudflare Pages</span>
+				</div>
+				<div class="sysinfo-row">
+					<span class="si-key c-comment">src</span>
+					<span class="si-val"><a href="https://github.com/vharish/vhari_sh" target="_blank" rel="noopener noreferrer" class="c-blue">vharish/vhari_sh ↗</a></span>
+				</div>
+			</div>
+		</section>
 
-		</aside>
+	</aside>
 
-	</div>
-
-	<!-- BOTTOM STATUS BAR -->
-	<footer class="statusbar">
-		<div class="sb-left">
-			<span class="sb-mode">NORMAL</span>
-			<span class="sb-sep">│</span>
-			<span class="sb-file c-fg">~/vhari.sh</span>
-		</div>
-		<div class="sb-center">
-			<span class="c-comment">day dreamer.. in love with everything there is.</span>
-		</div>
-		<div class="sb-right">
-			<span class="c-comment">made with love &amp; zero apologies</span>
-			<span class="sb-sep">│</span>
-			<span class="c-fg">est. 2026</span>
-		</div>
-	</footer>
-
-</div>
+</div><!-- /.scene -->
 
 <style>
 	/* ============================================
-	   TOKYO NIGHT PALETTE
+	   PALETTE
 	   ============================================ */
 	:root {
 		--bg:      #1a1b2e;
@@ -228,35 +228,27 @@
 		--border:  #2d3149;
 		--border2: #4a527a;
 		--fg:      #c0caf5;
-		--fg-dim:  #8088b3;  /* brighter dim — readable */
-		--comment: #8088b3;  /* same — sidebar headers, ls-perms etc */
+		--comment: #8088b3;
 		--blue:    #7aa2f7;
 		--green:   #9ece6a;
 		--cyan:    #7dcfff;
 		--yellow:  #e0af68;
-		--red:     #f7768e;
 		--purple:  #bb9af7;
+		--crt-w:   900px;
+		--crt-h:   92vh;
+		--sidebar-w: 300px;
 		--font:    'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
 	}
 
-	/* ============================================
-	   RESET
-	   ============================================ */
 	:global(*, *::before, *::after) { box-sizing: border-box; margin: 0; padding: 0; }
 
 	:global(html, body) {
 		height: 100%;
-		background: var(--bg);
-		color: var(--fg);
 		font-family: var(--font);
 		font-size: 15px;
 		line-height: 1.6;
-		overflow-x: hidden;
-		/* nebula background — visible in the margins */
-		background-image: url('/bg-nebula.jpg');
-		background-size: cover;
-		background-position: center;
-		background-attachment: fixed;
+		overflow: hidden; /* scene handles scroll */
+		background: #08090f;
 	}
 
 	/* ============================================
@@ -268,34 +260,87 @@
 	.c-comment { color: var(--comment); }
 
 	/* ============================================
-	   TERMINAL WRAPPER
+	   SCENE — full viewport, nebula bg
 	   ============================================ */
-	.term {
+	.scene {
+		width: 100vw;
+		height: 100vh;
+		background-image: url('/bg-nebula.jpg');
+		background-size: cover;
+		background-position: center;
 		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-		width: 100%;
+		align-items: center;
+		justify-content: center;
+		gap: 0;
+		position: relative;
+		overflow: hidden;
+	}
+
+	/* subtle dark vignette so edges don't compete with CRT */
+	.scene::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(ellipse at center, transparent 40%, rgba(4,4,12,0.7) 100%);
+		pointer-events: none;
+		z-index: 0;
 	}
 
 	/* ============================================
-	   TOP BAR (tmux style) — fixed, full width
+	   CRT SCREEN
+	   ============================================ */
+	.crt {
+		position: relative;
+		z-index: 1;
+		width: var(--crt-w);
+		height: var(--crt-h);
+		display: flex;
+		flex-direction: column;
+		background: rgba(20, 21, 38, 0.93);
+		border-radius: 8px;
+		border: 1px solid var(--border2);
+		/* phosphor glow */
+		box-shadow:
+			0 0 0 1px rgba(122,162,247,0.1),
+			0 0 20px rgba(122,162,247,0.08),
+			0 0 60px rgba(122,162,247,0.06),
+			0 0 120px rgba(100,120,220,0.05),
+			inset 0 0 40px rgba(0,0,0,0.3);
+		overflow: hidden;
+	}
+
+	/* scanlines */
+	.crt-scanlines {
+		position: absolute;
+		inset: 0;
+		background: repeating-linear-gradient(
+			0deg,
+			transparent,
+			transparent 2px,
+			rgba(0,0,0,0.08) 2px,
+			rgba(0,0,0,0.08) 4px
+		);
+		pointer-events: none;
+		z-index: 10;
+		border-radius: 8px;
+	}
+
+	/* ============================================
+	   TOPBAR
 	   ============================================ */
 	.topbar {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		background: rgba(22, 33, 62, 0.92);
-		backdrop-filter: blur(8px);
+		background: rgba(15, 52, 96, 0.6);
 		border-bottom: 1px solid var(--border);
 		padding: 0 1rem;
 		height: 28px;
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		z-index: 100;
+		flex-shrink: 0;
 		font-size: 0.8rem;
 		user-select: none;
+		position: relative;
+		z-index: 5;
 	}
 
 	.topbar-left, .topbar-right {
@@ -304,83 +349,89 @@
 		gap: 0.5rem;
 	}
 
-	.tb-session {
-		color: var(--green);
-		font-weight: 500;
-	}
-
-	.tb-sep {
-		color: var(--border2);
-	}
-
-	.tb-window {
-		color: var(--comment);
-		padding: 0 0.5rem;
-		cursor: default;
-	}
-
-	.active-window {
-		background: var(--bg2);
-		color: var(--fg);
-		padding: 2px 0.7rem;
-	}
-
-	.tb-info {
-		color: var(--blue);
-	}
-
-	.tb-time {
-		color: var(--yellow);
-		font-variant-numeric: tabular-nums;
-		min-width: 7ch;
-	}
+	.tb-session  { color: var(--green); font-weight: 500; }
+	.tb-sep      { color: var(--border2); }
+	.tb-window   { color: var(--comment); padding: 0 0.5rem; cursor: default; }
+	.active-window { background: rgba(15,52,96,0.8); color: var(--fg); padding: 2px 0.7rem; }
+	.tb-info     { color: var(--blue); }
+	.tb-time     { color: var(--yellow); font-variant-numeric: tabular-nums; min-width: 7ch; }
 
 	/* ============================================
-	   PANES — main centered, sidebar fixed right
+	   SCROLLABLE BODY
 	   ============================================ */
-
-	/* content area below topbar, above statusbar */
-	.panes {
-		margin-top: 28px;  /* topbar height */
-		margin-bottom: 26px; /* statusbar height */
-		min-height: calc(100vh - 54px);
-		display: flex;
-		justify-content: center;
-		position: relative;
-	}
-
-	/* main content — fixed width, centered, scrollable */
-	.pane {
-		width: 900px;
-		max-width: 900px;
-		flex-shrink: 0;
+	.crt-body {
+		flex: 1;
+		overflow-y: auto;
+		padding: 2rem 2.5rem;
 		display: flex;
 		flex-direction: column;
 		gap: 2.5rem;
-		padding: 2.5rem 2.5rem;
-		background: rgba(26, 27, 46, 0.88);
-		backdrop-filter: blur(4px);
-		border-left: 1px solid var(--border);
-		border-right: 1px solid var(--border);
-		min-height: 100%;
+		position: relative;
+		z-index: 5;
+		/* custom scrollbar */
+		scrollbar-width: thin;
+		scrollbar-color: var(--border2) transparent;
 	}
 
-	/* fixed sidebar — anchored to right edge of main pane */
-	.pane-side {
-		position: fixed;
-		top: 28px;
-		bottom: 26px;
-		width: 300px;
-		padding: 1.5rem;
-		gap: 2rem;
-		background: rgba(22, 33, 62, 0.92);
-		backdrop-filter: blur(8px);
-		border-left: 1px solid var(--border);
+	.crt-body::-webkit-scrollbar { width: 4px; }
+	.crt-body::-webkit-scrollbar-track { background: transparent; }
+	.crt-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+	/* ============================================
+	   STATUS BAR
+	   ============================================ */
+	.statusbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background: rgba(15, 52, 96, 0.7);
+		border-top: 1px solid var(--border);
+		padding: 0 1rem;
+		height: 26px;
+		flex-shrink: 0;
+		font-size: 0.78rem;
+		user-select: none;
+		position: relative;
+		z-index: 5;
+	}
+
+	.sb-left, .sb-right, .sb-center {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.sb-mode {
+		background: var(--green);
+		color: var(--bg);
+		font-weight: 700;
+		padding: 0 0.6rem;
+		font-size: 0.72rem;
+		letter-spacing: 0.05em;
+	}
+
+	.sb-sep { color: var(--border2); }
+
+	/* ============================================
+	   SIDEBAR — floats outside the CRT
+	   ============================================ */
+	.sidebar {
+		position: relative;
+		z-index: 1;
+		width: var(--sidebar-w);
+		height: var(--crt-h);
 		display: flex;
 		flex-direction: column;
+		gap: 1.5rem;
+		padding: 1.2rem;
+		background: rgba(16, 20, 40, 0.75);
+		backdrop-filter: blur(12px);
+		border: 1px solid var(--border);
+		border-left: none;
+		border-radius: 0 8px 8px 0;
 		overflow-y: auto;
-		/* position right of main pane — calculated from center */
-		left: calc(50% + 450px);
+		scrollbar-width: thin;
+		scrollbar-color: var(--border2) transparent;
 	}
 
 	/* ============================================
@@ -398,7 +449,7 @@
 		line-height: 1.2;
 		font-weight: 700;
 		white-space: pre;
-		text-shadow: 0 0 20px rgba(122,162,247,0.4);
+		text-shadow: 0 0 20px rgba(122,162,247,0.5);
 		flex-shrink: 0;
 	}
 
@@ -415,14 +466,9 @@
 		margin-bottom: 0.1rem;
 	}
 
-	.fetch-line {
-		color: var(--border2);
-		margin-bottom: 0.2rem;
-	}
+	.fetch-line { color: var(--border2); margin-bottom: 0.2rem; }
 
-	.fetch-row {
-		font-size: 0.95rem;
-	}
+	.fetch-row { font-size: 0.95rem; }
 
 	.fetch-key {
 		display: inline-block;
@@ -489,12 +535,9 @@
 	}
 
 	/* ============================================
-	   PROJECTS (ls -la style)
+	   PROJECTS
 	   ============================================ */
-	.ls-header {
-		font-size: 0.8rem;
-		margin-bottom: 0.3rem;
-	}
+	.ls-header { font-size: 0.8rem; margin-bottom: 0.3rem; }
 
 	.ls-row {
 		display: flex;
@@ -509,35 +552,14 @@
 		font-size: 0.88rem;
 	}
 
-	.ls-row:hover {
-		background: var(--border);
-	}
+	.ls-row:hover { background: var(--border); }
+	.ls-row:hover .ls-url { color: var(--cyan); }
 
-	.ls-row:hover .ls-url {
-		color: var(--cyan);
-	}
+	.ls-perms { font-size: 0.78rem; flex-shrink: 0; }
+	.ls-name  { font-weight: 700; flex-shrink: 0; min-width: 8ch; }
+	.ls-desc  { flex: 1; min-width: 0; }
 
-	.ls-perms {
-		font-size: 0.78rem;
-		flex-shrink: 0;
-	}
-
-	.ls-name {
-		font-weight: 700;
-		flex-shrink: 0;
-		min-width: 8ch;
-	}
-
-	.ls-desc {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.ls-tags {
-		display: flex;
-		gap: 0.3rem;
-		flex-shrink: 0;
-	}
+	.ls-tags  { display: flex; gap: 0.3rem; flex-shrink: 0; }
 
 	.tag {
 		font-size: 0.72rem;
@@ -554,10 +576,7 @@
 		transition: color 0.1s;
 	}
 
-	.ls-more {
-		margin-top: 0.5rem;
-		font-size: 0.8rem;
-	}
+	.ls-more { margin-top: 0.5rem; font-size: 0.8rem; }
 
 	/* ============================================
 	   LINKS
@@ -569,35 +588,23 @@
 		text-decoration: none;
 		padding: 0.3rem 0;
 		font-size: 0.9rem;
-		transition: color 0.1s;
 		color: var(--fg);
+		transition: color 0.1s;
 	}
 
 	.link-line:hover .link-label { color: var(--cyan); }
 	.link-line:hover .link-icon  { color: var(--cyan); }
 
-	.link-icon {
-		color: var(--blue);
-		flex-shrink: 0;
-		transition: color 0.1s;
-	}
-
-	.link-label {
-		font-weight: 500;
-		transition: color 0.1s;
-	}
-
-	.link-url {
-		font-size: 0.78rem;
-		margin-left: 0.3rem;
-	}
+	.link-icon  { color: var(--blue); flex-shrink: 0; transition: color 0.1s; }
+	.link-label { font-weight: 500; transition: color 0.1s; }
+	.link-url   { font-size: 0.78rem; margin-left: 0.3rem; }
 
 	/* ============================================
-	   CURSOR BLINK
+	   CURSOR
 	   ============================================ */
 	.cursor-blink {
-		animation: blink 1s step-end infinite;
 		color: var(--green);
+		animation: blink 1s step-end infinite;
 	}
 
 	@keyframes blink {
@@ -606,13 +613,9 @@
 	}
 
 	/* ============================================
-	   SIDEBAR SECTIONS
+	   SIDEBAR INTERNALS
 	   ============================================ */
-	.side-section {
-		display: flex;
-		flex-direction: column;
-		gap: 0.6rem;
-	}
+	.side-section { display: flex; flex-direction: column; gap: 0.6rem; }
 
 	.side-header {
 		display: flex;
@@ -621,25 +624,17 @@
 		font-size: 0.85rem;
 		font-weight: 500;
 		color: var(--fg);
-		text-transform: lowercase;
-		letter-spacing: 0.05em;
-		user-select: none;
 		border-bottom: 1px solid var(--border2);
 		padding-bottom: 0.4rem;
+		user-select: none;
 	}
 
-	.side-header span:first-child {
-		color: var(--green);
-	}
+	.side-header span:first-child { color: var(--green); }
 
-	.side-body {
-		font-size: 0.85rem;
-	}
+	.side-body { font-size: 0.85rem; }
+	.side-spacer { flex: 1; }
 
-	/* bandcamp player */
-	.player-body {
-		padding: 0;
-	}
+	.player-body { padding: 0; }
 
 	.bandcamp-player {
 		display: block;
@@ -648,118 +643,47 @@
 		border: 1px solid var(--border);
 	}
 
-	.side-spacer {
-		flex: 1;
-	}
+	.sysinfo-body { display: flex; flex-direction: column; gap: 0.25rem; }
 
-	/* sysinfo */
-	.sysinfo-body {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
+	.sysinfo-row { display: flex; gap: 0.5rem; font-size: 0.82rem; }
 
-	.sysinfo-row {
-		display: flex;
-		gap: 0.5rem;
-		font-size: 0.82rem;
-	}
+	.si-key { min-width: 9ch; flex-shrink: 0; font-size: 0.78rem; }
 
-	.si-key {
-		min-width: 9ch;
-		flex-shrink: 0;
-		font-size: 0.78rem;
-	}
-
-	.si-val {
-		color: var(--fg);
-	}
+	.si-val { color: var(--fg); }
 
 	.si-val a {
 		color: var(--blue);
 		text-decoration: none;
 	}
 
-	.si-val a:hover {
-		text-decoration: underline;
-	}
-
-	/* ============================================
-	   STATUS BAR (vim style) — fixed, full width
-	   ============================================ */
-	.statusbar {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		background: rgba(15, 52, 96, 0.95);
-		backdrop-filter: blur(8px);
-		padding: 0 1rem;
-		height: 26px;
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		z-index: 100;
-		font-size: 0.78rem;
-		border-top: 1px solid var(--border);
-		user-select: none;
-	}
-
-	.sb-left, .sb-right, .sb-center {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.sb-mode {
-		background: var(--green);
-		color: var(--bg);
-		font-weight: 700;
-		padding: 0 0.5rem;
-		font-size: 0.72rem;
-		letter-spacing: 0.05em;
-	}
-
-	.sb-sep {
-		color: var(--fg-dim);
-	}
+	.si-val a:hover { text-decoration: underline; }
 
 	/* ============================================
 	   RESPONSIVE
 	   ============================================ */
-
-	/* when viewport is too narrow to show sidebar next to main */
-	@media (max-width: 1220px) {
-		.pane-side {
-			display: none;
-		}
+	@media (max-width: 1260px) {
+		.sidebar { display: none; }
+		.crt { border-radius: 8px; }
 	}
 
 	@media (max-width: 960px) {
-		.pane {
-			width: 100%;
-			max-width: 100%;
-			border-left: none;
-			border-right: none;
+		:root {
+			--crt-w: 100vw;
+			--crt-h: 100vh;
 		}
+
+		.crt {
+			border-radius: 0;
+			border: none;
+		}
+
+		.scene::before { display: none; }
 	}
 
 	@media (max-width: 600px) {
-		.pane {
-			padding: 1.5rem 1rem;
-		}
-
-		.ls-perms, .ls-tags {
-			display: none;
-		}
-
-		.sb-center {
-			display: none;
-		}
-
-		.fetch-block {
-			flex-direction: column;
-			gap: 1rem;
-		}
+		.crt-body { padding: 1.5rem 1rem; }
+		.ls-perms, .ls-tags { display: none; }
+		.sb-center { display: none; }
+		.fetch-block { flex-direction: column; gap: 1rem; }
 	}
 </style>
