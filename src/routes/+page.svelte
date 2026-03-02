@@ -1,3 +1,10 @@
+<script lang="ts">
+	// ✏️ UPDATE THIS to change the album — paste any Bandcamp album embed ID here.
+	// To find it: go to the album page → Share / Embed → Embed this album → copy the number after "album=" in the src URL.
+	const bandcampAlbumId = '1168728865';
+	const bandcampEmbedUrl = `https://bandcamp.com/EmbeddedPlayer/album=${bandcampAlbumId}/size=large/bgcol=000000/linkcol=ff00cc/tracklist=false/transparent=true/`;
+</script>
+
 <svelte:head>
 	<title>HARISH :: vhari.sh :: WELCOME TO MY PAGE !!</title>
 	<meta name="description" content="day dreamer.. in love with everything there is." />
@@ -191,21 +198,15 @@
 			<div class="widget now-playing-widget">
 				<div class="widget-titlebar">
 					<span class="titlebar-dots"><i></i><i></i><i></i></span>
-					<span class="titlebar-text">winamp.exe</span>
+					<span class="titlebar-text">♪ now playing</span>
 				</div>
 				<div class="widget-body now-playing-body">
-					<div class="winamp-display">
-						<div class="winamp-screen">
-							<p class="winamp-scroll">♪ &nbsp; the sound of everything &nbsp; — &nbsp; harish &nbsp; &nbsp; &nbsp; ♪ &nbsp; the sound of everything &nbsp; — &nbsp; harish &nbsp; &nbsp; &nbsp;</p>
-						</div>
-						<div class="winamp-bars">
-							<span></span><span></span><span></span><span></span><span></span>
-							<span></span><span></span><span></span><span></span><span></span>
-						</div>
-					</div>
-					<div class="winamp-controls">
-						<span>⏮</span><span>⏪</span><span class="play-btn">▶</span><span>⏩</span><span>⏭</span>
-					</div>
+					<iframe
+						src={bandcampEmbedUrl}
+						title="Bandcamp player"
+						seamless
+						class="bandcamp-player"
+					></iframe>
 				</div>
 			</div>
 
@@ -607,78 +608,16 @@
 		font-style: italic;
 	}
 
-	/* --- winamp --- */
+	/* --- bandcamp player --- */
 	.now-playing-body {
-		padding: 0.6rem;
+		padding: 0;
 	}
 
-	.winamp-display {
-		background: #000;
-		border: 1px solid #004400;
-		padding: 0.4rem;
-		margin-bottom: 0.4rem;
-	}
-
-	.winamp-screen {
-		overflow: hidden;
-		height: 1.2rem;
-		margin-bottom: 0.3rem;
-	}
-
-	.winamp-scroll {
-		font-family: 'Courier Prime', monospace;
-		font-size: 0.8rem;
-		color: #00ff44;
-		white-space: nowrap;
-		animation: winamp-scroll 12s linear infinite;
-		text-shadow: 0 0 6px #00ff44;
-	}
-
-	@keyframes winamp-scroll {
-		from { transform: translateX(100%); }
-		to   { transform: translateX(-100%); }
-	}
-
-	.winamp-bars {
-		display: flex;
-		gap: 2px;
-		align-items: flex-end;
-		height: 20px;
-	}
-
-	.winamp-bars span {
-		flex: 1;
-		background: linear-gradient(to top, #00ff00, #ffff00, #ff0000);
-		animation: winamp-bar 0.4s ease-in-out infinite alternate;
-	}
-
-	.winamp-bars span:nth-child(1) { height: 40%; animation-delay: 0s; }
-	.winamp-bars span:nth-child(2) { height: 80%; animation-delay: 0.05s; }
-	.winamp-bars span:nth-child(3) { height: 60%; animation-delay: 0.1s; }
-	.winamp-bars span:nth-child(4) { height: 90%; animation-delay: 0.15s; }
-	.winamp-bars span:nth-child(5) { height: 50%; animation-delay: 0.2s; }
-	.winamp-bars span:nth-child(6) { height: 70%; animation-delay: 0.25s; }
-	.winamp-bars span:nth-child(7) { height: 85%; animation-delay: 0.3s; }
-	.winamp-bars span:nth-child(8) { height: 45%; animation-delay: 0.35s; }
-	.winamp-bars span:nth-child(9) { height: 95%; animation-delay: 0.4s; }
-	.winamp-bars span:nth-child(10){ height: 30%; animation-delay: 0.45s; }
-
-	@keyframes winamp-bar {
-		from { transform: scaleY(0.3); }
-		to   { transform: scaleY(1); }
-	}
-
-	.winamp-controls {
-		display: flex;
-		justify-content: space-around;
-		font-size: 0.8rem;
-		color: #aaa;
-		cursor: pointer;
-	}
-
-	.play-btn {
-		color: #00ff44 !important;
-		text-shadow: 0 0 6px #00ff44;
+	.bandcamp-player {
+		display: block;
+		width: 100%;
+		height: 240px;
+		border: none;
 	}
 
 	/* --- badges --- */
