@@ -7,10 +7,11 @@
 	const bandcampAlbumId = '1168728865';
 	const bandcampEmbedUrl = `https://bandcamp.com/EmbeddedPlayer/album=${bandcampAlbumId}/size=large/bgcol=16213e/linkcol=7dcfff/tracklist=true/transparent=true/`;
 
-	let clockText = $state('');
-	let bgUrl   = $state('/bg-nebula.jpg');
-	let bgMode  = $state<'vertical' | 'regular'>('regular');
-	let bgReady = $state(false);
+	let clockText  = $state('');
+	let bgUrl      = $state('');
+	let bgImgMode  = $state<'vertical' | 'regular'>('regular');
+	let sceneMode  = $state<'depth-layers' | 'radial-spotlight'>('depth-layers');
+	let bgReady    = $state(false);
 
 	function updateClock() {
 		clockText = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -21,8 +22,9 @@
 		const interval = setInterval(updateClock, 1000);
 
 		const resolved = await resolveBg();
-		bgUrl  = resolved.url;
-		bgMode = resolved.mode;
+		bgUrl     = resolved.url;
+		bgImgMode = resolved.imgMode;
+		sceneMode = resolved.sceneMode;
 		requestAnimationFrame(() => { bgReady = true; });
 
 		return () => clearInterval(interval);
@@ -38,12 +40,11 @@
 </svelte:head>
 
 <!-- time-of-day background -->
-<div class="scene">
-	<div class="scene-bg scene-bg-base"></div>
+<div class="scene" class:mode-depth-layers={sceneMode === 'depth-layers'} class:mode-radial-spotlight={sceneMode === 'radial-spotlight'}>
 	<div class="scene-bg scene-bg-top"
 		class:ready={bgReady}
-		class:vertical={bgMode === 'vertical'}
-		style="background-image: url('{bgUrl}')"
+		class:vertical={bgImgMode === 'vertical'}
+		style={bgUrl ? `background-image: url('${bgUrl}')` : ''}
 	></div>
 
 	<!-- CRT screen: topbar + scrollable content + statusbar -->
@@ -287,49 +288,64 @@
 		gap: 0;
 		position: relative;
 		overflow: hidden;
-		background: #08090f; /* shown before any image loads */
+		background: #08090f;
 	}
 
-	/* two-layer cross-fade: base sits below, top fades in over it */
-	.scene-bg {
+	/* bg image layer */
+	.scene-bg-top {
 		position: absolute;
 		inset: 0;
 		background-size: cover;
 		background-position: center;
 		pointer-events: none;
-	}
-
-	.scene-bg-base {
 		z-index: 0;
-		opacity: 1;
-	}
-
-	.scene-bg-top {
-		z-index: 1;
 		opacity: 0;
 		transition: opacity 1.2s ease-in-out;
 	}
 
-	.scene-bg-top.ready {
-		opacity: 1;
-	}
+	.scene-bg-top.ready { opacity: 1; }
 
-	/* vertical mode — left-aligned portrait image with gradient fade */
-	.scene-bg-top.vertical {
-		background-size: auto 100%;
-		background-position: left center;
-		-webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.3) 20%, transparent 50%);
-		mask-image: linear-gradient(to right, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.3) 20%, transparent 50%);
-	}
+	/* ============================================
+	   MODE: depth-layers
+	   Full-bleed image. Three-zone darkness overlay:
+	   edges ~85% dark, center ~55% dark, thin bright strip far left.
+	   CRT becomes semi-transparent so image breathes through.
+	   ============================================ */
 
-	/* subtle dark vignette so edges don't compete with CRT */
-	.scene::before {
+	/* zone overlay: dark edges, slightly lighter center */
+	.mode-depth-layers::before {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: radial-gradient(ellipse at center, transparent 40%, rgba(4,4,12,0.7) 100%);
+		z-index: 1;
 		pointer-events: none;
-		z-index: 2;
+		background:
+			/* left bright sliver — barely darkened */
+			linear-gradient(to right, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.15) 3%, transparent 12%),
+			/* left-to-center darkening band */
+			linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.4) 50%, transparent 70%),
+			/* right edge dark */
+			linear-gradient(to left, rgba(0,0,0,0.8) 0%, transparent 35%),
+			/* top/bottom vignette */
+			radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.75) 100%);
+	}
+
+	/* ============================================
+	   MODE: radial-spotlight
+	   Heavy dark vignette, lighter halo behind the CRT.
+	   ============================================ */
+	.mode-radial-spotlight::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+		background: radial-gradient(
+			ellipse 55% 70% at 50% 50%,
+			rgba(0,0,0,0.35) 0%,
+			rgba(0,0,0,0.6) 50%,
+			rgba(0,0,0,0.88) 100%
+		);
 	}
 
 	/* ============================================
@@ -342,7 +358,7 @@
 		height: var(--crt-h);
 		display: flex;
 		flex-direction: column;
-		background: rgba(20, 21, 38, 0.93);
+		background: rgba(20, 21, 38, 0.72); /* semi-transparent so bg image bleeds through subtly */
 		border-radius: 8px;
 		border: 1px solid var(--border2);
 		/* phosphor glow */

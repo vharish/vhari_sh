@@ -1,33 +1,43 @@
 /**
  * Time-of-day background image resolver.
  *
- * Drop images in static/bg/ — they're picked up automatically.
- * Format priority: webp → jpg → jpeg → png (first found wins)
+ * ============================================================
+ * ✏️  SCENE MODE — change this one line to switch visual style
+ * ============================================================
  *
- * Regular (full-bleed, centered):
- *   static/bg/bg-night.{webp,jpg,jpeg,png}
- *   static/bg/bg-dawn.{webp,jpg,jpeg,png}
- *   static/bg/bg-morning.{webp,jpg,jpeg,png}
- *   static/bg/bg-day.{webp,jpg,jpeg,png}
- *   static/bg/bg-dusk.{webp,jpg,jpeg,png}
- *   static/bg/bg-evening.{webp,jpg,jpeg,png}
+ *   'depth-layers'    — full-bleed image, three zones of darkness,
+ *                       semi-transparent CRT so image bleeds through
  *
- * Vertical (left-aligned, gradient fade to right):
- *   static/bg/bg-night-vertical.{webp,jpg,jpeg,png}
- *   static/bg/bg-dawn-vertical.{webp,jpg,jpeg,png}
- *   ... same pattern for all slots
+ *   'radial-spotlight' — dark vignette over image, lighter halo
+ *                        behind the CRT, very transparent terminal
  *
- * If a vertical image exists for the slot, it takes priority over the regular one.
- * Falls back through other slots, then /bg-nebula.jpg.
+ * ============================================================
  */
+export const SCENE_MODE: SceneMode = 'depth-layers';
 
-export const FALLBACK_URL = ''; // no image — falls back to plain dark #08090f scene background
+export type SceneMode = 'depth-layers' | 'radial-spotlight';
 
-export type BgMode = 'vertical' | 'regular';
+// ============================================================
+// Image resolution
+// ============================================================
+//
+// Drop images in static/bg/ — picked up automatically.
+// Format priority: webp → jpg → jpeg → png
+//
+//   static/bg/bg-{slot}.{ext}           full-bleed, centered
+//   static/bg/bg-{slot}-vertical.{ext}  left-aligned (used in vertical layout modes)
+//
+// Slots: night (0-5) · dawn (6-8) · morning (9-11)
+//        day (12-16) · dusk (17-19) · evening (20-23)
+//
+// Falls back through other slots, then empty (plain dark scene bg).
+
+export type BgImgMode = 'vertical' | 'regular';
 
 export interface BgResult {
 	url: string;
-	mode: BgMode;
+	imgMode: BgImgMode;
+	sceneMode: SceneMode;
 }
 
 type Slot = 'night' | 'dawn' | 'morning' | 'day' | 'dusk' | 'evening';
@@ -71,30 +81,22 @@ async function resolveSlot(slot: Slot, vertical = false): Promise<string | null>
 	return results.find(r => r !== null) ?? null;
 }
 
-/**
- * Resolves the best background for the current time.
- * Prefers vertical image → regular image, for the ideal slot first, then fallbacks.
- */
 export async function resolveBg(): Promise<BgResult> {
 	const ideal = currentSlot();
 
-	// Try ideal slot: vertical first, then regular
 	const idealVertical = await resolveSlot(ideal, true);
-	if (idealVertical) return { url: idealVertical, mode: 'vertical' };
+	if (idealVertical) return { url: idealVertical, imgMode: 'vertical', sceneMode: SCENE_MODE };
 
 	const idealRegular = await resolveSlot(ideal, false);
-	if (idealRegular) return { url: idealRegular, mode: 'regular' };
+	if (idealRegular) return { url: idealRegular, imgMode: 'regular', sceneMode: SCENE_MODE };
 
-	// Try fallback slots
 	for (const slot of FALLBACK_ORDER) {
 		if (slot === ideal) continue;
-
 		const vertUrl = await resolveSlot(slot, true);
-		if (vertUrl) return { url: vertUrl, mode: 'vertical' };
-
+		if (vertUrl) return { url: vertUrl, imgMode: 'vertical', sceneMode: SCENE_MODE };
 		const regUrl = await resolveSlot(slot, false);
-		if (regUrl) return { url: regUrl, mode: 'regular' };
+		if (regUrl) return { url: regUrl, imgMode: 'regular', sceneMode: SCENE_MODE };
 	}
 
-	return { url: FALLBACK_URL, mode: 'regular' };
+	return { url: '', imgMode: 'regular', sceneMode: SCENE_MODE };
 }
