@@ -499,19 +499,25 @@
 	}
 
 	.project-card {
-		border: 1px solid var(--border);
-		background: rgba(22, 33, 62, 0.6);
+		border: 1px solid var(--border2);
+		border-left: 3px solid var(--blue);
+		background: rgba(12, 14, 28, 0.85);
 		display: flex;
 		flex-direction: column;
 		border-radius: 4px;
-		transition: border-color 0.15s;
+		transition: border-color 0.15s, box-shadow 0.15s;
 	}
 
-	.project-card:hover { border-color: var(--border2); }
+	.project-card:hover {
+		border-color: var(--blue);
+		border-left-color: var(--cyan);
+		box-shadow: 0 0 18px rgba(122,162,247,0.1);
+	}
 
 	.card-placeholder {
 		border-style: dashed;
-		opacity: 0.4;
+		border-left-style: dashed;
+		opacity: 0.35;
 	}
 
 	.card-header {
@@ -519,7 +525,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.8rem 1.2rem;
-		border-bottom: 1px solid var(--border);
+		background: rgba(15, 52, 96, 0.35);
+		border-bottom: 1px solid var(--border2);
 	}
 
 	.card-title-row {
@@ -579,7 +586,7 @@
 		flex-direction: column;
 		gap: 0.4rem;
 		padding-top: 0.5rem;
-		border-top: 1px solid var(--border);
+		border-top: 1px solid var(--border2);
 	}
 
 	.meta-row {
@@ -612,9 +619,9 @@
 	}
 
 	.card-footer {
-		border-top: 1px solid var(--border);
+		border-top: 1px solid var(--border2);
 		padding: 0.8rem 1.2rem;
-		background: rgba(10, 12, 22, 0.4);
+		background: rgba(8, 10, 20, 0.6);
 	}
 
 	.preview-art {
