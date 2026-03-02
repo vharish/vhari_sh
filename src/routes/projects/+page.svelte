@@ -311,10 +311,8 @@
 		z-index: 1;
 		pointer-events: none;
 		background:
-			linear-gradient(to right, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.15) 3%, transparent 12%),
-			linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.4) 50%, transparent 70%),
-			linear-gradient(to left, rgba(0,0,0,0.8) 0%, transparent 35%),
-			radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.75) 100%);
+			linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+			linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.3) 100%);
 	}
 
 	/* MODE: radial-spotlight */
