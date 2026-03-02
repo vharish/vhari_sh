@@ -126,6 +126,47 @@
 				</div>
 			</div>
 
+			<!-- projects window -->
+			<div class="window projects-window">
+				<div class="window-titlebar">
+					<span class="win-title">📁 projects/ — File Manager</span>
+					<span class="win-controls"><span>_</span><span>□</span><span>✕</span></span>
+				</div>
+				<div class="window-menubar">
+					<span>File</span><span>View</span><span>Go</span><span>Help</span>
+				</div>
+				<div class="window-body projects-body">
+					<div class="projects-toolbar">
+						<span class="projects-path">C:\HARISH\PROJECTS\</span>
+					</div>
+					<div class="projects-grid">
+
+						<a href="https://dj.vhari.sh" target="_blank" rel="noopener noreferrer" class="project-card">
+							<div class="project-icon">
+								<div class="project-icon-art dj-icon">
+									<span class="dj-disc">◉</span>
+									<span class="dj-lines">
+										<i></i><i></i><i></i>
+									</span>
+								</div>
+							</div>
+							<div class="project-info">
+								<p class="project-name">DDJ-400 Guide</p>
+								<p class="project-desc">Interactive controller map for learning to DJ. Built to figure out what all the knobs do.</p>
+								<div class="project-tags">
+									<span class="tag">vanilla js</span>
+									<span class="tag">svg</span>
+									<span class="tag">learning</span>
+								</div>
+								<span class="project-url">dj.vhari.sh ↗</span>
+							</div>
+						</a>
+
+					</div>
+					<p class="projects-footer">1 object(s) &nbsp;|&nbsp; more incoming</p>
+				</div>
+			</div>
+
 		</main>
 
 		<!-- RIGHT COLUMN -->
@@ -947,5 +988,179 @@
 		.ticker span {
 			font-size: 0.45rem;
 		}
+	}
+
+	/* ============================================
+	   PROJECTS WINDOW
+	   ============================================ */
+	.projects-body {
+		padding: 0;
+		background: #fff;
+	}
+
+	.projects-toolbar {
+		background: #c0c0c0;
+		border-bottom: 1px solid #808080;
+		padding: 3px 8px;
+	}
+
+	.projects-path {
+		font-family: 'Press Start 2P', monospace;
+		font-size: 0.38rem;
+		color: #000;
+		letter-spacing: 0.02em;
+	}
+
+	.projects-grid {
+		padding: 0.8rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+
+	.project-card {
+		display: flex;
+		gap: 0.8rem;
+		align-items: flex-start;
+		text-decoration: none;
+		padding: 0.6rem;
+		border: 1px solid transparent;
+		transition: all 0.1s;
+		color: #000;
+	}
+
+	.project-card:hover {
+		background: #000080;
+		border-color: #0000cc;
+		color: #fff;
+	}
+
+	.project-card:hover .project-desc,
+	.project-card:hover .projects-footer,
+	.project-card:hover .project-url { color: #aaddff; }
+
+	.project-card:hover .tag {
+		background: #0000aa;
+		color: #88ccff;
+		border-color: #4488ff;
+	}
+
+	.project-card:hover .dj-disc { color: #ff88ff; text-shadow: 0 0 8px #ff88ff; }
+	.project-card:hover .dj-lines i { background: #88ffff; }
+
+	.project-icon {
+		flex-shrink: 0;
+		width: 48px;
+		height: 48px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.project-icon-art {
+		width: 44px;
+		height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+	}
+
+	/* DJ icon — turntable-ish */
+	.dj-icon {
+		flex-direction: column;
+		gap: 3px;
+	}
+
+	.dj-disc {
+		font-size: 1.6rem;
+		color: #9900ff;
+		line-height: 1;
+		animation: spin-disc 3s linear infinite;
+		display: block;
+		text-shadow: 0 0 6px rgba(153,0,255,0.5);
+	}
+
+	@keyframes spin-disc {
+		from { transform: rotate(0deg); }
+		to   { transform: rotate(360deg); }
+	}
+
+	.dj-lines {
+		display: flex;
+		gap: 2px;
+		align-items: flex-end;
+		height: 10px;
+	}
+
+	.dj-lines i {
+		display: block;
+		width: 3px;
+		background: #ff00cc;
+		border-radius: 1px;
+	}
+
+	.dj-lines i:nth-child(1) { height: 6px;  animation: bar-bounce 0.5s ease-in-out infinite alternate; }
+	.dj-lines i:nth-child(2) { height: 10px; animation: bar-bounce 0.5s ease-in-out infinite alternate 0.1s; }
+	.dj-lines i:nth-child(3) { height: 7px;  animation: bar-bounce 0.5s ease-in-out infinite alternate 0.2s; }
+
+	@keyframes bar-bounce {
+		from { transform: scaleY(0.4); }
+		to   { transform: scaleY(1); }
+	}
+
+	.project-info {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.project-name {
+		font-family: 'Press Start 2P', monospace;
+		font-size: 0.55rem;
+		color: inherit;
+		margin-bottom: 0.4rem;
+		letter-spacing: 0.03em;
+	}
+
+	.project-desc {
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.78rem;
+		color: #333;
+		line-height: 1.5;
+		margin-bottom: 0.5rem;
+	}
+
+	.project-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem;
+		margin-bottom: 0.4rem;
+	}
+
+	.tag {
+		font-family: 'Press Start 2P', monospace;
+		font-size: 0.3rem;
+		color: #660099;
+		background: #eeddff;
+		border: 1px solid #cc99ff;
+		padding: 2px 5px;
+		letter-spacing: 0.03em;
+	}
+
+	.project-url {
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.7rem;
+		color: #0000ee;
+		text-decoration: underline;
+	}
+
+	.projects-footer {
+		font-family: 'Press Start 2P', monospace;
+		font-size: 0.32rem;
+		color: #666;
+		padding: 4px 8px;
+		border-top: 1px solid #c0c0c0;
+		background: #c0c0c0;
+		letter-spacing: 0.03em;
 	}
 </style>
