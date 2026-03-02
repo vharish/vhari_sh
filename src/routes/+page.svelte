@@ -8,8 +8,9 @@
 	const bandcampEmbedUrl = `https://bandcamp.com/EmbeddedPlayer/album=${bandcampAlbumId}/size=large/bgcol=16213e/linkcol=7dcfff/tracklist=true/transparent=true/`;
 
 	let clockText = $state('');
-	let bgUrl = $state('/bg-nebula.jpg'); // default until resolved client-side
-	let bgReady = $state(false);          // controls fade-in
+	let bgUrl   = $state('/bg-nebula.jpg');
+	let bgMode  = $state<'vertical' | 'regular'>('regular');
+	let bgReady = $state(false);
 
 	function updateClock() {
 		clockText = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -20,8 +21,8 @@
 		const interval = setInterval(updateClock, 1000);
 
 		const resolved = await resolveBg();
-		bgUrl = resolved;
-		// small tick so browser has time to paint before we fade in
+		bgUrl  = resolved.url;
+		bgMode = resolved.mode;
 		requestAnimationFrame(() => { bgReady = true; });
 
 		return () => clearInterval(interval);
@@ -39,7 +40,11 @@
 <!-- time-of-day background -->
 <div class="scene">
 	<div class="scene-bg scene-bg-base" style="background-image: url('/bg-nebula.jpg')"></div>
-	<div class="scene-bg scene-bg-top" class:ready={bgReady} style="background-image: url('{bgUrl}')"></div>
+	<div class="scene-bg scene-bg-top"
+		class:ready={bgReady}
+		class:vertical={bgMode === 'vertical'}
+		style="background-image: url('{bgUrl}')"
+	></div>
 
 	<!-- CRT screen: topbar + scrollable content + statusbar -->
 	<div class="crt">
@@ -307,6 +312,15 @@
 
 	.scene-bg-top.ready {
 		opacity: 1;
+	}
+
+	/* vertical mode — left-aligned portrait image with gradient fade */
+	.scene-bg-top.vertical {
+		background-size: auto 100%;
+		background-position: left center;
+		/* fade from visible on the left to transparent ~65% across */
+		-webkit-mask-image: linear-gradient(to right, black 30%, transparent 70%);
+		mask-image: linear-gradient(to right, black 30%, transparent 70%);
 	}
 
 	/* subtle dark vignette so edges don't compete with CRT */

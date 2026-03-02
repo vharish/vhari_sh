@@ -1,22 +1,34 @@
 /**
  * Time-of-day background image resolver.
  *
- * Images live in static/bg/ — add any of these files and they'll be picked up automatically:
+ * Drop images in static/bg/ — they're picked up automatically.
+ * Format priority: webp → jpg → jpeg → png (first found wins)
  *
- *   static/bg/bg-night.{webp,jpg,png}       00:00 – 05:59  deep night
- *   static/bg/bg-dawn.{webp,jpg,png}        06:00 – 08:59  dawn
- *   static/bg/bg-morning.{webp,jpg,png}     09:00 – 11:59  morning
- *   static/bg/bg-day.{webp,jpg,png}         12:00 – 16:59  day
- *   static/bg/bg-dusk.{webp,jpg,png}        17:00 – 19:59  dusk
- *   static/bg/bg-evening.{webp,jpg,png}     20:00 – 23:59  evening / night
+ * Regular (full-bleed, centered):
+ *   static/bg/bg-night.{webp,jpg,jpeg,png}
+ *   static/bg/bg-dawn.{webp,jpg,jpeg,png}
+ *   static/bg/bg-morning.{webp,jpg,jpeg,png}
+ *   static/bg/bg-day.{webp,jpg,jpeg,png}
+ *   static/bg/bg-dusk.{webp,jpg,jpeg,png}
+ *   static/bg/bg-evening.{webp,jpg,jpeg,png}
  *
- * Format priority: webp → jpg → png (first one found wins)
+ * Vertical (left-aligned, gradient fade to right):
+ *   static/bg/bg-night-vertical.{webp,jpg,jpeg,png}
+ *   static/bg/bg-dawn-vertical.{webp,jpg,jpeg,png}
+ *   ... same pattern for all slots
  *
- * If the image for the current slot is missing, falls back through the list
- * until it finds one that loads, then falls back to FALLBACK_URL.
+ * If a vertical image exists for the slot, it takes priority over the regular one.
+ * Falls back through other slots, then /bg-nebula.jpg.
  */
 
 export const FALLBACK_URL = '/bg-nebula.jpg';
+
+export type BgMode = 'vertical' | 'regular';
+
+export interface BgResult {
+	url: string;
+	mode: BgMode;
+}
 
 type Slot = 'night' | 'dawn' | 'morning' | 'day' | 'dusk' | 'evening';
 
@@ -29,21 +41,20 @@ const SCHEDULE: { from: number; to: number; slot: Slot }[] = [
 	{ from: 20, to: 23, slot: 'evening' },
 ];
 
-// Slot order to try as fallbacks (roughly "closest aesthetically")
 const FALLBACK_ORDER: Slot[] = ['evening', 'night', 'dusk', 'dawn', 'morning', 'day'];
+
+const FORMATS = ['webp', 'jpg', 'jpeg', 'png'] as const;
 
 function currentSlot(): Slot {
 	const h = new Date().getHours();
 	return SCHEDULE.find(({ from, to }) => h >= from && h <= to)!.slot;
 }
 
-const FORMATS = ['webp', 'jpg', 'png'] as const;
-
-function slotUrls(slot: Slot): string[] {
-	return FORMATS.map(ext => `/bg/bg-${slot}.${ext}`);
+function slotUrls(slot: Slot, vertical = false): string[] {
+	const suffix = vertical ? '-vertical' : '';
+	return FORMATS.map(ext => `/bg/bg-${slot}${suffix}.${ext}`);
 }
 
-/** Returns true if the image at `url` loads successfully. */
 function canLoad(url: string): Promise<boolean> {
 	return new Promise((resolve) => {
 		const img = new Image();
@@ -53,31 +64,37 @@ function canLoad(url: string): Promise<boolean> {
 	});
 }
 
-/** Tries all formats in parallel, returns the highest-priority one that loaded. */
-async function resolveSlot(slot: Slot): Promise<string | null> {
-	const urls = slotUrls(slot);
-	const results = await Promise.all(urls.map(url => canLoad(url).then(ok => ok ? url : null)));
-	// return first non-null in priority order (webp → jpg → png)
+async function resolveSlot(slot: Slot, vertical = false): Promise<string | null> {
+	const results = await Promise.all(
+		slotUrls(slot, vertical).map(url => canLoad(url).then(ok => ok ? url : null))
+	);
 	return results.find(r => r !== null) ?? null;
 }
 
 /**
- * Resolves the best available background URL for the current time.
- * Tries the ideal slot first (webp → jpg → png), then other slots, then the hard fallback.
+ * Resolves the best background for the current time.
+ * Prefers vertical image → regular image, for the ideal slot first, then fallbacks.
  */
-export async function resolveBg(): Promise<string> {
+export async function resolveBg(): Promise<BgResult> {
 	const ideal = currentSlot();
 
-	const idealUrl = await resolveSlot(ideal);
-	if (idealUrl) return idealUrl;
+	// Try ideal slot: vertical first, then regular
+	const idealVertical = await resolveSlot(ideal, true);
+	if (idealVertical) return { url: idealVertical, mode: 'vertical' };
 
-	// Try remaining slots in fallback order (skip ideal, already tried)
+	const idealRegular = await resolveSlot(ideal, false);
+	if (idealRegular) return { url: idealRegular, mode: 'regular' };
+
+	// Try fallback slots
 	for (const slot of FALLBACK_ORDER) {
 		if (slot === ideal) continue;
-		const url = await resolveSlot(slot);
-		if (url) return url;
+
+		const vertUrl = await resolveSlot(slot, true);
+		if (vertUrl) return { url: vertUrl, mode: 'vertical' };
+
+		const regUrl = await resolveSlot(slot, false);
+		if (regUrl) return { url: regUrl, mode: 'regular' };
 	}
 
-	// Hard fallback
-	return FALLBACK_URL;
+	return { url: FALLBACK_URL, mode: 'regular' };
 }
