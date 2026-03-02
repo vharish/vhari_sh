@@ -476,8 +476,8 @@
 		flex-direction: column;
 		gap: 1.5rem;
 		padding: 1.2rem;
-		background: rgba(16, 20, 40, 0.75);
-		backdrop-filter: blur(12px);
+		background: rgba(20, 21, 38, 0.72);
+		backdrop-filter: none;
 		border: 1px solid var(--border);
 		border-radius: 8px;
 		margin-left: 8px;
