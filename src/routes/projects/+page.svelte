@@ -134,10 +134,10 @@
 		--bg:      #1a1b2e;
 		--bg1:     #16213e;
 		--bg2:     #0f3460;
-		--border:  #292e42;
-		--border2: #3b4261;
+		--border:  #2d3149;
+		--border2: #4a527a;
 		--fg:      #c0caf5;
-		--dim:     #565f89;
+		--dim:     #8088b3;
 		--blue:    #7aa2f7;
 		--green:   #9ece6a;
 		--cyan:    #7dcfff;

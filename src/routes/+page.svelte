@@ -4,7 +4,7 @@
 	// ✏️ UPDATE THIS to change the album — paste any Bandcamp album embed ID here.
 	// To find it: go to the album page → Share / Embed → Embed this album → copy the number after "album=" in the src URL.
 	const bandcampAlbumId = '1168728865';
-	const bandcampEmbedUrl = `https://bandcamp.com/EmbeddedPlayer/album=${bandcampAlbumId}/size=large/bgcol=1a1b2e/linkcol=7aa2f7/tracklist=true/transparent=true/`;
+	const bandcampEmbedUrl = `https://bandcamp.com/EmbeddedPlayer/album=${bandcampAlbumId}/size=large/bgcol=16213e/linkcol=7dcfff/tracklist=true/transparent=true/`;
 
 	let clockText = $state('');
 
@@ -225,11 +225,11 @@
 		--bg:      #1a1b2e;
 		--bg1:     #16213e;
 		--bg2:     #0f3460;
-		--border:  #292e42;
-		--border2: #3b4261;
+		--border:  #2d3149;
+		--border2: #4a527a;
 		--fg:      #c0caf5;
-		--fg-dim:  #565f89;
-		--comment: #565f89;
+		--fg-dim:  #8088b3;  /* brighter dim — readable */
+		--comment: #8088b3;  /* same — sidebar headers, ls-perms etc */
 		--blue:    #7aa2f7;
 		--green:   #9ece6a;
 		--cyan:    #7dcfff;
@@ -487,7 +487,7 @@
 	}
 
 	.ls-row:hover .ls-url {
-		opacity: 1;
+		color: var(--cyan);
 	}
 
 	.ls-perms {
@@ -523,8 +523,8 @@
 	.ls-url {
 		font-size: 0.78rem;
 		flex-shrink: 0;
-		opacity: 0.5;
-		transition: opacity 0.1s;
+		color: var(--comment);
+		transition: color 0.1s;
 	}
 
 	.ls-more {
@@ -591,13 +591,13 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		font-size: 0.8rem;
+		font-size: 0.85rem;
 		font-weight: 500;
-		color: var(--comment);
+		color: var(--fg);
 		text-transform: lowercase;
 		letter-spacing: 0.05em;
 		user-select: none;
-		border-bottom: 1px solid var(--border);
+		border-bottom: 1px solid var(--border2);
 		padding-bottom: 0.4rem;
 	}
 
@@ -689,7 +689,7 @@
 	}
 
 	.sb-sep {
-		color: var(--border2);
+		color: var(--fg-dim);
 	}
 
 	/* ============================================
