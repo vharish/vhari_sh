@@ -3,12 +3,12 @@
  *
  * Images live in static/bg/ — add any of these files and they'll be picked up automatically:
  *
- *   static/bg/night.jpg       00:00 – 05:59  deep night
- *   static/bg/dawn.jpg        06:00 – 08:59  dawn
- *   static/bg/morning.jpg     09:00 – 11:59  morning
- *   static/bg/day.jpg         12:00 – 16:59  day
- *   static/bg/dusk.jpg        17:00 – 19:59  dusk
- *   static/bg/evening.jpg     20:00 – 23:59  evening / night
+ *   static/bg/bg-night.jpg       00:00 – 05:59  deep night
+ *   static/bg/bg-dawn.jpg        06:00 – 08:59  dawn
+ *   static/bg/bg-morning.jpg     09:00 – 11:59  morning
+ *   static/bg/bg-day.jpg         12:00 – 16:59  day
+ *   static/bg/bg-dusk.jpg        17:00 – 19:59  dusk
+ *   static/bg/bg-evening.jpg     20:00 – 23:59  evening / night
  *
  * If the image for the current slot is missing, falls back through the list
  * until it finds one that loads, then falls back to FALLBACK_URL.
@@ -36,7 +36,7 @@ function currentSlot(): Slot {
 }
 
 function slotUrl(slot: Slot): string {
-	return `/bg/${slot}.jpg`;
+	return `/bg/bg-${slot}.jpg`;
 }
 
 /** Returns true if the image at `url` loads successfully. */

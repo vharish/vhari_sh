@@ -460,8 +460,8 @@
 		background: rgba(16, 20, 40, 0.75);
 		backdrop-filter: blur(12px);
 		border: 1px solid var(--border);
-		border-left: none;
-		border-radius: 0 8px 8px 0;
+		border-radius: 8px;
+		margin-left: 8px;
 		overflow-y: auto;
 		scrollbar-width: thin;
 		scrollbar-color: var(--border2) transparent;
