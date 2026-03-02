@@ -402,10 +402,11 @@
 	.titlebar-dots i:last-child  { background: #27c93f; }
 
 	.titlebar-text {
-		font-family: 'Press Start 2P', monospace;
-		font-size: 0.45rem;
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.75rem;
+		font-weight: 700;
 		color: #fff;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.03em;
 	}
 
 	.widget-body {
@@ -469,8 +470,9 @@
 	}
 
 	.globe-label {
-		font-family: 'Press Start 2P', monospace;
-		font-size: 0.35rem;
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.75rem;
+		font-weight: 700;
 		color: #00ccff;
 		text-align: center;
 		letter-spacing: 0.05em;
@@ -496,7 +498,7 @@
 
 	.construction-text {
 		font-family: 'Press Start 2P', monospace;
-		font-size: 0.55rem;
+		font-size: 0.7rem;
 		color: #ffcc00;
 		text-align: center;
 		padding: 0.7rem 0.5rem 0.3rem;
@@ -507,7 +509,7 @@
 
 	.construction-sub {
 		font-family: 'Courier Prime', monospace;
-		font-size: 0.7rem;
+		font-size: 0.85rem;
 		color: #9977cc;
 		text-align: center;
 		padding-bottom: 0.7rem;
@@ -525,8 +527,9 @@
 	}
 
 	.webring-title {
-		font-family: 'Press Start 2P', monospace;
-		font-size: 0.4rem;
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.8rem;
+		font-weight: 700;
 		color: #ff66ff;
 		letter-spacing: 0.05em;
 		margin-bottom: 0.6rem;
@@ -541,8 +544,9 @@
 	}
 
 	.webring-btn {
-		font-family: 'Press Start 2P', monospace;
-		font-size: 0.4rem;
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.8rem;
+		font-weight: 700;
 		color: #00ccff;
 		cursor: pointer;
 		transition: color 0.1s;
@@ -557,7 +561,7 @@
 
 	.webring-count {
 		font-family: 'Courier Prime', monospace;
-		font-size: 0.6rem;
+		font-size: 0.8rem;
 		color: #664488;
 	}
 
@@ -568,8 +572,9 @@
 	}
 
 	.counter-label {
-		font-family: 'Press Start 2P', monospace;
-		font-size: 0.4rem;
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.8rem;
+		font-weight: 700;
 		color: #ff66ff;
 		margin-bottom: 0.5rem;
 		letter-spacing: 0.05em;
@@ -597,7 +602,7 @@
 
 	.counter-sub {
 		font-family: 'Courier Prime', monospace;
-		font-size: 0.6rem;
+		font-size: 0.8rem;
 		color: #664466;
 		font-style: italic;
 	}
@@ -622,7 +627,7 @@
 
 	.winamp-scroll {
 		font-family: 'Courier Prime', monospace;
-		font-size: 0.65rem;
+		font-size: 0.8rem;
 		color: #00ff44;
 		white-space: nowrap;
 		animation: winamp-scroll 12s linear infinite;
@@ -717,10 +722,11 @@
 	}
 
 	.badge-text {
-		font-family: 'Press Start 2P', monospace;
-		font-size: 0.3rem;
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.72rem;
+		font-weight: 700;
 		color: #cce4ff;
-		line-height: 1.8;
+		line-height: 1.6;
 	}
 
 	/* ============================================
@@ -853,10 +859,11 @@
 	}
 
 	.win-title {
-		font-family: 'Press Start 2P', monospace;
-		font-size: 0.38rem;
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.8rem;
+		font-weight: 700;
 		color: #fff;
-		letter-spacing: 0.03em;
+		letter-spacing: 0.02em;
 	}
 
 	.win-controls {
@@ -888,8 +895,8 @@
 	}
 
 	.window-menubar span {
-		font-family: 'Press Start 2P', monospace;
-		font-size: 0.35rem;
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.8rem;
 		color: #000;
 		cursor: pointer;
 	}
@@ -1005,8 +1012,9 @@
 	}
 
 	.projects-path {
-		font-family: 'Press Start 2P', monospace;
-		font-size: 0.38rem;
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.8rem;
+		font-weight: 700;
 		color: #000;
 		letter-spacing: 0.02em;
 	}
@@ -1116,7 +1124,7 @@
 
 	.project-name {
 		font-family: 'Press Start 2P', monospace;
-		font-size: 0.55rem;
+		font-size: 0.7rem;
 		color: inherit;
 		margin-bottom: 0.4rem;
 		letter-spacing: 0.03em;
@@ -1138,12 +1146,12 @@
 	}
 
 	.tag {
-		font-family: 'Press Start 2P', monospace;
-		font-size: 0.3rem;
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.72rem;
 		color: #660099;
 		background: #eeddff;
 		border: 1px solid #cc99ff;
-		padding: 2px 5px;
+		padding: 1px 5px;
 		letter-spacing: 0.03em;
 	}
 
@@ -1155,9 +1163,9 @@
 	}
 
 	.projects-footer {
-		font-family: 'Press Start 2P', monospace;
-		font-size: 0.32rem;
-		color: #666;
+		font-family: 'Courier Prime', monospace;
+		font-size: 0.75rem;
+		color: #444;
 		padding: 4px 8px;
 		border-top: 1px solid #c0c0c0;
 		background: #c0c0c0;
