@@ -315,8 +315,8 @@
 	.scene-bg-top.vertical {
 		background-size: auto 100%;
 		background-position: left center;
-		-webkit-mask-image: linear-gradient(to right, black 30%, transparent 70%);
-		mask-image: linear-gradient(to right, black 30%, transparent 70%);
+		-webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.3) 20%, transparent 50%);
+		mask-image: linear-gradient(to right, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.3) 20%, transparent 50%);
 	}
 
 	.scene::before {
