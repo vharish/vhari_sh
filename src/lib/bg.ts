@@ -21,7 +21,7 @@
  * Falls back through other slots, then /bg-nebula.jpg.
  */
 
-export const FALLBACK_URL = '/bg-nebula.jpg';
+export const FALLBACK_URL = ''; // no image — falls back to plain dark #08090f scene background
 
 export type BgMode = 'vertical' | 'regular';
 

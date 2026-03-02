@@ -37,7 +37,7 @@
 
 <!-- time-of-day background -->
 <div class="scene">
-	<div class="scene-bg scene-bg-base" style="background-image: url('/bg-nebula.jpg')"></div>
+	<div class="scene-bg scene-bg-base"></div>
 	<div class="scene-bg scene-bg-top"
 		class:ready={bgReady}
 		class:vertical={bgMode === 'vertical'}
