@@ -252,6 +252,11 @@
 		font-size: 15px;
 		line-height: 1.6;
 		overflow-x: hidden;
+		/* nebula background — visible in the margins */
+		background-image: url('/bg-nebula.jpg');
+		background-size: cover;
+		background-position: center;
+		background-attachment: fixed;
 	}
 
 	/* ============================================
@@ -273,17 +278,22 @@
 	}
 
 	/* ============================================
-	   TOP BAR (tmux style)
+	   TOP BAR (tmux style) — fixed, full width
 	   ============================================ */
 	.topbar {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		background: var(--bg1);
+		background: rgba(22, 33, 62, 0.92);
+		backdrop-filter: blur(8px);
 		border-bottom: 1px solid var(--border);
 		padding: 0 1rem;
 		height: 28px;
-		flex-shrink: 0;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 100;
 		font-size: 0.8rem;
 		user-select: none;
 	}
@@ -326,34 +336,51 @@
 	}
 
 	/* ============================================
-	   PANES
+	   PANES — main centered, sidebar fixed right
 	   ============================================ */
+
+	/* content area below topbar, above statusbar */
 	.panes {
-		display: grid;
-		grid-template-columns: 1fr 340px;
-		flex: 1;
-		min-height: 0;
+		margin-top: 28px;  /* topbar height */
+		margin-bottom: 26px; /* statusbar height */
+		min-height: calc(100vh - 54px);
+		display: flex;
+		justify-content: center;
+		position: relative;
 	}
 
-	/* pane border separator */
-	.pane-side {
-		border-left: 1px solid var(--border);
-	}
-
+	/* main content — fixed width, centered, scrollable */
 	.pane {
+		width: 900px;
+		max-width: 900px;
+		flex-shrink: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 2.5rem;
+		padding: 2.5rem 2.5rem;
+		background: rgba(26, 27, 46, 0.88);
+		backdrop-filter: blur(4px);
+		border-left: 1px solid var(--border);
+		border-right: 1px solid var(--border);
+		min-height: 100%;
+	}
+
+	/* fixed sidebar — anchored to right edge of main pane */
+	.pane-side {
+		position: fixed;
+		top: 28px;
+		bottom: 26px;
+		width: 300px;
+		padding: 1.5rem;
+		gap: 2rem;
+		background: rgba(22, 33, 62, 0.92);
+		backdrop-filter: blur(8px);
+		border-left: 1px solid var(--border);
 		display: flex;
 		flex-direction: column;
 		overflow-y: auto;
-		padding: 2rem 2.5rem;
-		gap: 2.5rem;
-	}
-
-	.pane-side {
-		padding: 1.5rem 1.5rem;
-		gap: 2rem;
-		background: var(--bg1);
-		display: flex;
-		flex-direction: column;
+		/* position right of main pane — calculated from center */
+		left: calc(50% + 450px);
 	}
 
 	/* ============================================
@@ -658,16 +685,21 @@
 	}
 
 	/* ============================================
-	   STATUS BAR (vim style)
+	   STATUS BAR (vim style) — fixed, full width
 	   ============================================ */
 	.statusbar {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		background: var(--bg2);
+		background: rgba(15, 52, 96, 0.95);
+		backdrop-filter: blur(8px);
 		padding: 0 1rem;
 		height: 26px;
-		flex-shrink: 0;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 100;
 		font-size: 0.78rem;
 		border-top: 1px solid var(--border);
 		user-select: none;
@@ -695,19 +727,20 @@
 	/* ============================================
 	   RESPONSIVE
 	   ============================================ */
-	@media (max-width: 900px) {
-		.panes {
-			grid-template-columns: 1fr;
-		}
 
+	/* when viewport is too narrow to show sidebar next to main */
+	@media (max-width: 1220px) {
 		.pane-side {
-			border-left: none;
-			border-top: 1px solid var(--border);
+			display: none;
 		}
+	}
 
-		.fetch-block {
-			flex-direction: column;
-			gap: 1rem;
+	@media (max-width: 960px) {
+		.pane {
+			width: 100%;
+			max-width: 100%;
+			border-left: none;
+			border-right: none;
 		}
 	}
 
@@ -720,9 +753,13 @@
 			display: none;
 		}
 
-		.topbar-right .tb-info,
 		.sb-center {
 			display: none;
+		}
+
+		.fetch-block {
+			flex-direction: column;
+			gap: 1rem;
 		}
 	}
 </style>
