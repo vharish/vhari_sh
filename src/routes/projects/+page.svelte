@@ -26,7 +26,7 @@
 			bgUrl     = resolved.url;
 			bgImgMode = resolved.imgMode;
 			sceneMode = resolved.sceneMode;
-			requestAnimationFrame(() => { bgReady = true; });
+			setTimeout(() => { bgReady = true; }, 2000);
 		}
 
 		return () => clearInterval(interval);
