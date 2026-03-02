@@ -42,7 +42,7 @@
 				<span class="tb-session">tmux: harish@vhari.sh</span>
 				<span class="tb-sep">│</span>
 				<span class="tb-window active-window">0: ~</span>
-				<span class="tb-window">1: projects</span>
+				<a href="/projects" class="tb-window">1: projects</a>
 				<span class="tb-window">2: music</span>
 			</div>
 			<div class="topbar-right">
@@ -351,7 +351,7 @@
 
 	.tb-session  { color: var(--green); font-weight: 500; }
 	.tb-sep      { color: var(--border2); }
-	.tb-window   { color: var(--comment); padding: 0 0.5rem; cursor: default; }
+	.tb-window   { color: var(--comment); padding: 0 0.5rem; cursor: default; text-decoration: none; }
 	.active-window { background: rgba(15,52,96,0.8); color: var(--fg); padding: 2px 0.7rem; }
 	.tb-info     { color: var(--blue); }
 	.tb-time     { color: var(--yellow); font-variant-numeric: tabular-nums; min-width: 7ch; }
