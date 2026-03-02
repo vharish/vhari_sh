@@ -4,7 +4,7 @@
 	// ✏️ UPDATE THIS to change the album — paste any Bandcamp album embed ID here.
 	// To find it: go to the album page → Share / Embed → Embed this album → copy the number after "album=" in the src URL.
 	const bandcampAlbumId = '1168728865';
-	const bandcampEmbedUrl = `https://bandcamp.com/EmbeddedPlayer/album=${bandcampAlbumId}/size=large/bgcol=1a1b2e/linkcol=7aa2f7/tracklist=false/transparent=true/`;
+	const bandcampEmbedUrl = `https://bandcamp.com/EmbeddedPlayer/album=${bandcampAlbumId}/size=large/bgcol=1a1b2e/linkcol=7aa2f7/tracklist=true/transparent=true/`;
 
 	let clockText = $state('');
 
@@ -161,6 +161,8 @@
 					></iframe>
 				</div>
 			</section>
+
+			<div class="side-spacer"></div>
 
 			<!-- system info widget -->
 			<section class="side-section">
@@ -350,6 +352,8 @@
 		padding: 1.5rem 1.5rem;
 		gap: 2rem;
 		background: var(--bg1);
+		display: flex;
+		flex-direction: column;
 	}
 
 	/* ============================================
@@ -602,9 +606,12 @@
 	.bandcamp-player {
 		display: block;
 		width: 100%;
-		height: 260px;
-		border: none;
+		height: 500px;
 		border: 1px solid var(--border);
+	}
+
+	.side-spacer {
+		flex: 1;
 	}
 
 	/* sysinfo */
