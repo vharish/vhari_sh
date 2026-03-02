@@ -3,12 +3,14 @@
  *
  * Images live in static/bg/ — add any of these files and they'll be picked up automatically:
  *
- *   static/bg/bg-night.jpg       00:00 – 05:59  deep night
- *   static/bg/bg-dawn.jpg        06:00 – 08:59  dawn
- *   static/bg/bg-morning.jpg     09:00 – 11:59  morning
- *   static/bg/bg-day.jpg         12:00 – 16:59  day
- *   static/bg/bg-dusk.jpg        17:00 – 19:59  dusk
- *   static/bg/bg-evening.jpg     20:00 – 23:59  evening / night
+ *   static/bg/bg-night.{webp,jpg,png}       00:00 – 05:59  deep night
+ *   static/bg/bg-dawn.{webp,jpg,png}        06:00 – 08:59  dawn
+ *   static/bg/bg-morning.{webp,jpg,png}     09:00 – 11:59  morning
+ *   static/bg/bg-day.{webp,jpg,png}         12:00 – 16:59  day
+ *   static/bg/bg-dusk.{webp,jpg,png}        17:00 – 19:59  dusk
+ *   static/bg/bg-evening.{webp,jpg,png}     20:00 – 23:59  evening / night
+ *
+ * Format priority: webp → jpg → png (first one found wins)
  *
  * If the image for the current slot is missing, falls back through the list
  * until it finds one that loads, then falls back to FALLBACK_URL.
@@ -35,8 +37,10 @@ function currentSlot(): Slot {
 	return SCHEDULE.find(({ from, to }) => h >= from && h <= to)!.slot;
 }
 
-function slotUrl(slot: Slot): string {
-	return `/bg/bg-${slot}.jpg`;
+const FORMATS = ['webp', 'jpg', 'png'] as const;
+
+function slotUrls(slot: Slot): string[] {
+	return FORMATS.map(ext => `/bg/bg-${slot}.${ext}`);
 }
 
 /** Returns true if the image at `url` loads successfully. */
@@ -49,20 +53,29 @@ function canLoad(url: string): Promise<boolean> {
 	});
 }
 
+/** Tries each format URL in priority order, returns first that loads or null. */
+async function resolveSlot(slot: Slot): Promise<string | null> {
+	for (const url of slotUrls(slot)) {
+		if (await canLoad(url)) return url;
+	}
+	return null;
+}
+
 /**
  * Resolves the best available background URL for the current time.
- * Tries the ideal slot first, then other slots, then the hard fallback.
+ * Tries the ideal slot first (webp → jpg → png), then other slots, then the hard fallback.
  */
 export async function resolveBg(): Promise<string> {
 	const ideal = currentSlot();
 
-	// Try ideal slot first
-	if (await canLoad(slotUrl(ideal))) return slotUrl(ideal);
+	const idealUrl = await resolveSlot(ideal);
+	if (idealUrl) return idealUrl;
 
 	// Try remaining slots in fallback order (skip ideal, already tried)
 	for (const slot of FALLBACK_ORDER) {
 		if (slot === ideal) continue;
-		if (await canLoad(slotUrl(slot))) return slotUrl(slot);
+		const url = await resolveSlot(slot);
+		if (url) return url;
 	}
 
 	// Hard fallback
