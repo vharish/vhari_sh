@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { resolveBg } from '$lib/bg';
+	import { resolveBg, getCachedBg } from '$lib/bg';
 
 	const bandcampAlbumId = '1168728865';
 	const bandcampEmbedUrl = `https://bandcamp.com/EmbeddedPlayer/album=${bandcampAlbumId}/size=large/bgcol=16213e/linkcol=7dcfff/tracklist=true/transparent=true/`;
 
 	let clockText  = $state('');
-	let bgUrl      = $state('');
-	let bgImgMode  = $state<'vertical' | 'regular'>('regular');
-	let sceneMode  = $state<'depth-layers' | 'radial-spotlight'>('depth-layers');
-	let bgReady    = $state(false);
+
+	const _cached = typeof sessionStorage !== 'undefined' ? getCachedBg() : null;
+	let bgUrl      = $state(_cached?.url ?? '');
+	let bgImgMode  = $state<'vertical' | 'regular'>(_cached?.imgMode ?? 'regular');
+	let sceneMode  = $state<'depth-layers' | 'radial-spotlight'>(_cached?.sceneMode ?? 'depth-layers');
+	let bgReady    = $state(_cached !== null);
 
 	function updateClock() {
 		clockText = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -19,11 +21,13 @@
 		updateClock();
 		const interval = setInterval(updateClock, 1000);
 
-		const resolved = await resolveBg();
-		bgUrl     = resolved.url;
-		bgImgMode = resolved.imgMode;
-		sceneMode = resolved.sceneMode;
-		requestAnimationFrame(() => { bgReady = true; });
+		if (!_cached) {
+			const resolved = await resolveBg();
+			bgUrl     = resolved.url;
+			bgImgMode = resolved.imgMode;
+			sceneMode = resolved.sceneMode;
+			requestAnimationFrame(() => { bgReady = true; });
+		}
 
 		return () => clearInterval(interval);
 	});

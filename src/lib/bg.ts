@@ -81,22 +81,47 @@ async function resolveSlot(slot: Slot, vertical = false): Promise<string | null>
 	return results.find(r => r !== null) ?? null;
 }
 
+const SESSION_KEY = 'vhari-bg';
+
+/** Read cached result from sessionStorage (same-session navigations). */
+export function getCachedBg(): BgResult | null {
+	try {
+		const raw = sessionStorage.getItem(SESSION_KEY);
+		if (!raw) return null;
+		return JSON.parse(raw) as BgResult;
+	} catch {
+		return null;
+	}
+}
+
+function cacheBg(result: BgResult) {
+	try {
+		sessionStorage.setItem(SESSION_KEY, JSON.stringify(result));
+	} catch { /* ignore */ }
+}
+
 export async function resolveBg(): Promise<BgResult> {
+	// Return cached value instantly if available (avoids re-probe on navigation)
+	const cached = getCachedBg();
+	if (cached) return cached;
+
 	const ideal = currentSlot();
 
 	const idealVertical = await resolveSlot(ideal, true);
-	if (idealVertical) return { url: idealVertical, imgMode: 'vertical', sceneMode: SCENE_MODE };
+	if (idealVertical) { const r = { url: idealVertical, imgMode: 'vertical' as BgImgMode, sceneMode: SCENE_MODE }; cacheBg(r); return r; }
 
 	const idealRegular = await resolveSlot(ideal, false);
-	if (idealRegular) return { url: idealRegular, imgMode: 'regular', sceneMode: SCENE_MODE };
+	if (idealRegular) { const r = { url: idealRegular, imgMode: 'regular' as BgImgMode, sceneMode: SCENE_MODE }; cacheBg(r); return r; }
 
 	for (const slot of FALLBACK_ORDER) {
 		if (slot === ideal) continue;
 		const vertUrl = await resolveSlot(slot, true);
-		if (vertUrl) return { url: vertUrl, imgMode: 'vertical', sceneMode: SCENE_MODE };
+		if (vertUrl) { const r = { url: vertUrl, imgMode: 'vertical' as BgImgMode, sceneMode: SCENE_MODE }; cacheBg(r); return r; }
 		const regUrl = await resolveSlot(slot, false);
-		if (regUrl) return { url: regUrl, imgMode: 'regular', sceneMode: SCENE_MODE };
+		if (regUrl) { const r = { url: regUrl, imgMode: 'regular' as BgImgMode, sceneMode: SCENE_MODE }; cacheBg(r); return r; }
 	}
 
-	return { url: '', imgMode: 'regular', sceneMode: SCENE_MODE };
+	const fallback = { url: '', imgMode: 'regular' as BgImgMode, sceneMode: SCENE_MODE };
+	cacheBg(fallback);
+	return fallback;
 }

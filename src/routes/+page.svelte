@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { resolveBg } from '$lib/bg';
+	import { resolveBg, getCachedBg } from '$lib/bg';
 
 	// ✏️ UPDATE THIS to change the album — paste any Bandcamp album embed ID here.
 	// To find it: go to the album page → Share / Embed → Embed this album → copy the number after "album=" in the src URL.
@@ -8,10 +8,13 @@
 	const bandcampEmbedUrl = `https://bandcamp.com/EmbeddedPlayer/album=${bandcampAlbumId}/size=large/bgcol=16213e/linkcol=7dcfff/tracklist=true/transparent=true/`;
 
 	let clockText  = $state('');
-	let bgUrl      = $state('');
-	let bgImgMode  = $state<'vertical' | 'regular'>('regular');
-	let sceneMode  = $state<'depth-layers' | 'radial-spotlight'>('depth-layers');
-	let bgReady    = $state(false);
+
+	// Read cache synchronously — instant on navigation, no fade delay
+	const _cached = typeof sessionStorage !== 'undefined' ? getCachedBg() : null;
+	let bgUrl      = $state(_cached?.url ?? '');
+	let bgImgMode  = $state<'vertical' | 'regular'>(_cached?.imgMode ?? 'regular');
+	let sceneMode  = $state<'depth-layers' | 'radial-spotlight'>(_cached?.sceneMode ?? 'depth-layers');
+	let bgReady    = $state(_cached !== null); // already ready if cached
 
 	function updateClock() {
 		clockText = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -21,11 +24,14 @@
 		updateClock();
 		const interval = setInterval(updateClock, 1000);
 
-		const resolved = await resolveBg();
-		bgUrl     = resolved.url;
-		bgImgMode = resolved.imgMode;
-		sceneMode = resolved.sceneMode;
-		requestAnimationFrame(() => { bgReady = true; });
+		// If not cached, resolve (first visit) — will fade in
+		if (!_cached) {
+			const resolved = await resolveBg();
+			bgUrl     = resolved.url;
+			bgImgMode = resolved.imgMode;
+			sceneMode = resolved.sceneMode;
+			requestAnimationFrame(() => { bgReady = true; });
+		}
 
 		return () => clearInterval(interval);
 	});
