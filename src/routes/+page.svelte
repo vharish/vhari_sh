@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { resolveBg } from '$lib/bg';
 
 	// ✏️ UPDATE THIS to change the album — paste any Bandcamp album embed ID here.
 	// To find it: go to the album page → Share / Embed → Embed this album → copy the number after "album=" in the src URL.
@@ -7,14 +8,22 @@
 	const bandcampEmbedUrl = `https://bandcamp.com/EmbeddedPlayer/album=${bandcampAlbumId}/size=large/bgcol=16213e/linkcol=7dcfff/tracklist=true/transparent=true/`;
 
 	let clockText = $state('');
+	let bgUrl = $state('/bg-nebula.jpg'); // default until resolved client-side
+	let bgReady = $state(false);          // controls fade-in
 
 	function updateClock() {
 		clockText = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 	}
 
-	onMount(() => {
+	onMount(async () => {
 		updateClock();
 		const interval = setInterval(updateClock, 1000);
+
+		const resolved = await resolveBg();
+		bgUrl = resolved;
+		// small tick so browser has time to paint before we fade in
+		requestAnimationFrame(() => { bgReady = true; });
+
 		return () => clearInterval(interval);
 	});
 </script>
@@ -27,8 +36,10 @@
 	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap" rel="stylesheet" />
 </svelte:head>
 
-<!-- nebula background -->
+<!-- time-of-day background -->
 <div class="scene">
+	<div class="scene-bg scene-bg-base" style="background-image: url('/bg-nebula.jpg')"></div>
+	<div class="scene-bg scene-bg-top" class:ready={bgReady} style="background-image: url('{bgUrl}')"></div>
 
 	<!-- CRT screen: topbar + scrollable content + statusbar -->
 	<div class="crt">
@@ -260,20 +271,42 @@
 	.c-comment { color: var(--comment); }
 
 	/* ============================================
-	   SCENE — full viewport, nebula bg
+	   SCENE — full viewport, time-of-day bg
 	   ============================================ */
 	.scene {
 		width: 100vw;
 		height: 100vh;
-		background-image: url('/bg-nebula.jpg');
-		background-size: cover;
-		background-position: center;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 0;
 		position: relative;
 		overflow: hidden;
+		background: #08090f; /* shown before any image loads */
+	}
+
+	/* two-layer cross-fade: base sits below, top fades in over it */
+	.scene-bg {
+		position: absolute;
+		inset: 0;
+		background-size: cover;
+		background-position: center;
+		pointer-events: none;
+	}
+
+	.scene-bg-base {
+		z-index: 0;
+		opacity: 1;
+	}
+
+	.scene-bg-top {
+		z-index: 1;
+		opacity: 0;
+		transition: opacity 1.2s ease-in-out;
+	}
+
+	.scene-bg-top.ready {
+		opacity: 1;
 	}
 
 	/* subtle dark vignette so edges don't compete with CRT */
@@ -283,7 +316,7 @@
 		inset: 0;
 		background: radial-gradient(ellipse at center, transparent 40%, rgba(4,4,12,0.7) 100%);
 		pointer-events: none;
-		z-index: 0;
+		z-index: 2;
 	}
 
 	/* ============================================
@@ -291,7 +324,7 @@
 	   ============================================ */
 	.crt {
 		position: relative;
-		z-index: 1;
+		z-index: 3;
 		width: var(--crt-w);
 		height: var(--crt-h);
 		display: flex;
@@ -417,7 +450,7 @@
 	   ============================================ */
 	.sidebar {
 		position: relative;
-		z-index: 1;
+		z-index: 3;
 		width: var(--sidebar-w);
 		height: var(--crt-h);
 		display: flex;
