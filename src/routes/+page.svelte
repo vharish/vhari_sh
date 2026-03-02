@@ -100,7 +100,7 @@
 				<h2 class="section-header">
 					<span class="c-green">❯</span>
 					<span class="c-blue">ls</span>
-					<span class="c-fg">-la ~/projects/</span>
+					<a href="/projects" class="c-fg section-link">-la ~/projects/</a>
 				</h2>
 				<div class="section-body projects-list">
 					<div class="ls-header">
@@ -249,7 +249,7 @@
 		background: var(--bg);
 		color: var(--fg);
 		font-family: var(--font);
-		font-size: 14px;
+		font-size: 15px;
 		line-height: 1.6;
 		overflow-x: hidden;
 	}
@@ -367,7 +367,7 @@
 
 	.ascii-art {
 		color: var(--blue);
-		font-size: 0.85rem;
+		font-size: 1rem;
 		line-height: 1.2;
 		font-weight: 700;
 		white-space: pre;
@@ -383,7 +383,7 @@
 	}
 
 	.fetch-title {
-		font-size: 1.1rem;
+		font-size: 1.4rem;
 		font-weight: 700;
 		margin-bottom: 0.1rem;
 	}
@@ -394,7 +394,7 @@
 	}
 
 	.fetch-row {
-		font-size: 0.85rem;
+		font-size: 0.95rem;
 	}
 
 	.fetch-key {
@@ -437,15 +437,26 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		font-size: 0.9rem;
-		font-weight: 400;
+		font-size: 1.05rem;
+		font-weight: 500;
 		user-select: none;
+	}
+
+	.section-link {
+		text-decoration: none;
+		border-bottom: 1px dashed var(--border2);
+		transition: color 0.1s, border-color 0.1s;
+	}
+
+	.section-link:hover {
+		color: var(--cyan);
+		border-bottom-color: var(--cyan);
 	}
 
 	.section-body {
 		color: var(--fg);
-		font-size: 0.9rem;
-		line-height: 1.75;
+		font-size: 0.95rem;
+		line-height: 1.8;
 		padding-left: 1.2rem;
 		border-left: 2px solid var(--border);
 	}
