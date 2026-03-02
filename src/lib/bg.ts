@@ -53,12 +53,12 @@ function canLoad(url: string): Promise<boolean> {
 	});
 }
 
-/** Tries each format URL in priority order, returns first that loads or null. */
+/** Tries all formats in parallel, returns the highest-priority one that loaded. */
 async function resolveSlot(slot: Slot): Promise<string | null> {
-	for (const url of slotUrls(slot)) {
-		if (await canLoad(url)) return url;
-	}
-	return null;
+	const urls = slotUrls(slot);
+	const results = await Promise.all(urls.map(url => canLoad(url).then(ok => ok ? url : null)));
+	// return first non-null in priority order (webp → jpg → png)
+	return results.find(r => r !== null) ?? null;
 }
 
 /**
