@@ -3,19 +3,32 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { resolveBg, getCachedBg } from '$lib/bg';
-
-	// ✏️ UPDATE THIS to change the album
-	const bandcampAlbumId = '1168728865';
-	const bandcampEmbedUrl = `https://bandcamp.com/EmbeddedPlayer/album=${bandcampAlbumId}/size=large/bgcol=16213e/linkcol=7dcfff/tracklist=true/transparent=true/`;
+	import { musicLibrary } from '$lib/music';
 
 	let { children } = $props();
 
-	let clockText = $state('');
+	let currentAlbumId = $state(musicLibrary[0].id);
+
+	onMount(() => {
+		currentAlbumId = localStorage.getItem('vhari-now-playing') ?? musicLibrary[0].id;
+
+		const handler = (e: Event) => {
+			const id = (e as CustomEvent).detail;
+			if (id) currentAlbumId = id;
+		};
+		window.addEventListener('play-track', handler);
+		return () => window.removeEventListener('play-track', handler);
+	});
+
+	const bandcampEmbedUrl = $derived(
+		`https://bandcamp.com/EmbeddedPlayer/album=${currentAlbumId}/size=large/bgcol=16213e/linkcol=7dcfff/tracklist=true/transparent=true/`
+	);
 	const _cached = typeof sessionStorage !== 'undefined' ? getCachedBg() : null;
 	let bgUrl     = $state(_cached?.url ?? '');
 	let sceneMode = $state<'depth-layers' | 'radial-spotlight'>(_cached?.sceneMode ?? 'depth-layers');
 	let bgReady   = $state(_cached !== null);
 	let currentHour = new Date().getHours();
+	let clockText = $state('');
 
 	async function updateBg(force = false) {
 		const resolved = await resolveBg(force);
@@ -23,7 +36,6 @@
 			bgReady = false;
 			bgUrl = resolved.url;
 			sceneMode = resolved.sceneMode;
-			// Use the requested delay for the transition
 			setTimeout(() => { bgReady = true; }, 2000);
 		} else {
 			bgReady = true;
@@ -34,7 +46,6 @@
 		const now = new Date();
 		clockText = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 		
-		// If the hour has changed, re-check the background
 		if (now.getHours() !== currentHour) {
 			currentHour = now.getHours();
 			updateBg(true);
@@ -58,11 +69,13 @@
 	const STATUS: Record<string, string> = {
 		'/':         'in love with everything.',
 		'/projects': 'things i made',
+		'/music':    'things i listen to',
 	};
 
 	const PATH_LABEL: Record<string, string> = {
 		'/':         '~/',
 		'/projects': '~/projects',
+		'/music':    '~/music',
 	};
 </script>
 
@@ -91,9 +104,9 @@
 			<div class="topbar-left">
 				<span class="tb-session">tmux: harish@vhari.sh</span>
 				<span class="tb-sep">│</span>
-				<a href="/"        class="tb-window" class:active-window={$page.url.pathname === '/'}>0: home</a>
-				<a href="/projects" class="tb-window" class:active-window={$page.url.pathname === '/projects'}>1: projects</a>
-				<span class="tb-window">2: music</span>
+			<a href="/"        class="tb-window" class:active-window={$page.url.pathname === '/'}>0: home</a>
+			<a href="/projects" class="tb-window" class:active-window={$page.url.pathname === '/projects'}>1: projects</a>
+			<a href="/music"    class="tb-window" class:active-window={$page.url.pathname === '/music'}>2: music</a>
 			</div>
 			<div class="topbar-right">
 				<span class="tb-info">vhari.sh</span>
@@ -133,12 +146,14 @@
 				<span>now_playing</span>
 			</h3>
 			<div class="side-body player-body">
-				<iframe
-					src={bandcampEmbedUrl}
-					title="Bandcamp player"
-					seamless
-					class="bandcamp-player"
-				></iframe>
+				{#key currentAlbumId}
+					<iframe
+						src={bandcampEmbedUrl}
+						title="Bandcamp player"
+						seamless
+						class="bandcamp-player"
+					></iframe>
+				{/key}
 			</div>
 		</section>
 
@@ -190,7 +205,7 @@
 		--cyan:      #7dcfff;
 		--yellow:    #e0af68;
 		--purple:    #bb9af7;
-		--crt-w:     900px;
+		--crt-w:     1100px;
 		--crt-h:     92vh;
 		--sidebar-w: 300px;
 		--font:      'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
