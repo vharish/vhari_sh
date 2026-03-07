@@ -56,12 +56,12 @@
 
 	// Per-route statusbar text
 	const STATUS: Record<string, string> = {
-		'/':         'day dreamer.. in love with everything there is.',
-		'/projects': 'things I\'ve built to learn, explore, or scratch an itch',
+		'/':         'in love with everything.',
+		'/projects': 'things i made',
 	};
 
 	const PATH_LABEL: Record<string, string> = {
-		'/':         '~/vhari.sh',
+		'/':         '~/',
 		'/projects': '~/projects',
 	};
 </script>
@@ -91,7 +91,7 @@
 			<div class="topbar-left">
 				<span class="tb-session">tmux: harish@vhari.sh</span>
 				<span class="tb-sep">│</span>
-				<a href="/"        class="tb-window" class:active-window={$page.url.pathname === '/'}>0: ~</a>
+				<a href="/"        class="tb-window" class:active-window={$page.url.pathname === '/'}>0: home</a>
 				<a href="/projects" class="tb-window" class:active-window={$page.url.pathname === '/projects'}>1: projects</a>
 				<span class="tb-window">2: music</span>
 			</div>
