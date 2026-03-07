@@ -1,46 +1,57 @@
 /**
  * Time-of-day background image resolver.
- *
- * ============================================================
- * ✏️  SCENE MODE — change this one line to switch visual style
- * ============================================================
- *
- *   'depth-layers'    — full-bleed image, three zones of darkness,
- *                       semi-transparent CRT so image bleeds through
- *
- *   'radial-spotlight' — dark vignette over image, lighter halo
- *                        behind the CRT, very transparent terminal
- *
- * ============================================================
  */
 export const SCENE_MODE: SceneMode = 'depth-layers';
 
 export type SceneMode = 'depth-layers' | 'radial-spotlight';
 
 // ============================================================
-// Image resolution
+// Automatic BG Discovery
 // ============================================================
 //
-// Drop images in static/bg/ — picked up automatically.
-// Format priority: webp → jpg → jpeg → png
-//
-//   static/bg/bg-{slot}.{ext}           full-bleed, centered
-//   static/bg/bg-{slot}-vertical.{ext}  left-aligned (used in vertical layout modes)
-//
-// Slots: night (0-5) · dawn (6-8) · morning (9-11)
-//        day (12-16) · dusk (17-19) · evening (20-23)
-//
-// Falls back through other slots, then empty (plain dark scene bg).
+// Drop any image into src/lib/assets/bg/{slot}/
+// Vite will automatically find it and include it in the pool.
 
-export type BgImgMode = 'vertical' | 'regular';
+type Slot = 'night' | 'dawn' | 'morning' | 'day' | 'dusk' | 'evening';
+
+// Vite glob to find all images in the bg directory
+const RAW_IMAGES = import.meta.glob('$lib/assets/bg/**/*.{jpg,jpeg,png,webp,avif}', {
+	eager: true,
+	query: '?url',
+	import: 'default'
+}) as Record<string, string>;
+
+// Group the resolved URLs by slot
+const SLOT_POOLS: Record<Slot, string[]> = {
+	night:   [],
+	dawn:    [],
+	morning: [],
+	day:     [],
+	dusk:    [],
+	evening: [],
+};
+
+// Parse the paths and fill the pools
+// e.g. /src/lib/assets/bg/night/1.jpg -> slot: 'night', url: '/_app/immutable/assets/1.abc.jpg'
+for (const [path, url] of Object.entries(RAW_IMAGES)) {
+	const parts = path.split('/');
+	// path is like "/src/lib/assets/bg/night/1.jpg"
+	// so parts[parts.length - 2] should be "night"
+	const slotName = parts[parts.length - 2] as Slot;
+	if (SLOT_POOLS[slotName]) {
+		SLOT_POOLS[slotName].push(url);
+	}
+}
+
+console.log('[BG] Pools initialized:', SLOT_POOLS);
+
+const FALLBACK_ORDER: Slot[] = ['evening', 'night', 'dusk', 'dawn', 'morning', 'day'];
 
 export interface BgResult {
 	url: string;
-	imgMode: BgImgMode;
+	slot: Slot;
 	sceneMode: SceneMode;
 }
-
-type Slot = 'night' | 'dawn' | 'morning' | 'day' | 'dusk' | 'evening';
 
 const SCHEDULE: { from: number; to: number; slot: Slot }[] = [
 	{ from:  0, to:  5, slot: 'night'   },
@@ -51,44 +62,29 @@ const SCHEDULE: { from: number; to: number; slot: Slot }[] = [
 	{ from: 20, to: 23, slot: 'evening' },
 ];
 
-const FALLBACK_ORDER: Slot[] = ['evening', 'night', 'dusk', 'dawn', 'morning', 'day'];
-
-const FORMATS = ['webp', 'jpg', 'jpeg', 'png'] as const;
-
 function currentSlot(): Slot {
 	const h = new Date().getHours();
 	return SCHEDULE.find(({ from, to }) => h >= from && h <= to)!.slot;
 }
 
-function slotUrls(slot: Slot, vertical = false): string[] {
-	const suffix = vertical ? '-vertical' : '';
-	return FORMATS.map(ext => `/bg/bg-${slot}${suffix}.${ext}`);
+function getRandomImage(slot: Slot): string | null {
+	const pool = SLOT_POOLS[slot];
+	if (!pool || pool.length === 0) return null;
+	return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function canLoad(url: string): Promise<boolean> {
-	return new Promise((resolve) => {
-		const img = new Image();
-		img.onload  = () => resolve(true);
-		img.onerror = () => resolve(false);
-		img.src = url;
-	});
-}
-
-async function resolveSlot(slot: Slot, vertical = false): Promise<string | null> {
-	const results = await Promise.all(
-		slotUrls(slot, vertical).map(url => canLoad(url).then(ok => ok ? url : null))
-	);
-	return results.find(r => r !== null) ?? null;
-}
-
-const SESSION_KEY = 'vhari-bg';
+const SESSION_KEY = 'vhari-bg-v4';
 
 /** Read cached result from sessionStorage (same-session navigations). */
 export function getCachedBg(): BgResult | null {
 	try {
 		const raw = sessionStorage.getItem(SESSION_KEY);
 		if (!raw) return null;
-		return JSON.parse(raw) as BgResult;
+		const cached = JSON.parse(raw) as BgResult;
+		// If the hour has changed such that we are in a new slot, 
+		// invalidate the cache to force a re-resolution.
+		if (cached.slot !== currentSlot()) return null;
+		return cached;
 	} catch {
 		return null;
 	}
@@ -100,28 +96,48 @@ function cacheBg(result: BgResult) {
 	} catch { /* ignore */ }
 }
 
-export async function resolveBg(): Promise<BgResult> {
-	// Return cached value instantly if available (avoids re-probe on navigation)
-	const cached = getCachedBg();
-	if (cached) return cached;
-
+export async function resolveBg(force = false): Promise<BgResult> {
+	const h = new Date().getHours();
 	const ideal = currentSlot();
+	
+	console.log(`[BG] Resolving. Hour: ${h}, Ideal Slot: ${ideal}`);
 
-	const idealVertical = await resolveSlot(ideal, true);
-	if (idealVertical) { const r = { url: idealVertical, imgMode: 'vertical' as BgImgMode, sceneMode: SCENE_MODE }; cacheBg(r); return r; }
-
-	const idealRegular = await resolveSlot(ideal, false);
-	if (idealRegular) { const r = { url: idealRegular, imgMode: 'regular' as BgImgMode, sceneMode: SCENE_MODE }; cacheBg(r); return r; }
-
-	for (const slot of FALLBACK_ORDER) {
-		if (slot === ideal) continue;
-		const vertUrl = await resolveSlot(slot, true);
-		if (vertUrl) { const r = { url: vertUrl, imgMode: 'vertical' as BgImgMode, sceneMode: SCENE_MODE }; cacheBg(r); return r; }
-		const regUrl = await resolveSlot(slot, false);
-		if (regUrl) { const r = { url: regUrl, imgMode: 'regular' as BgImgMode, sceneMode: SCENE_MODE }; cacheBg(r); return r; }
+	// Return cached value instantly if available (avoids re-probe on navigation)
+	const cached = force ? null : getCachedBg();
+	if (cached) {
+		console.log(`[BG] Using cached result: ${cached.url}`);
+		return cached;
 	}
 
-	const fallback = { url: '', imgMode: 'regular' as BgImgMode, sceneMode: SCENE_MODE };
+	const idealUrl = getRandomImage(ideal);
+	if (idealUrl) { 
+		console.log(`[BG] Found ideal match in "${ideal}": ${idealUrl}`);
+		const r = { url: idealUrl, slot: ideal, sceneMode: SCENE_MODE }; 
+		cacheBg(r); 
+		return r; 
+	}
+
+	console.log(`[BG] No images in "${ideal}". Trying fallbacks...`);
+
+	// Fallback to other slots if the current one is empty
+	for (const slot of FALLBACK_ORDER) {
+		if (slot === ideal) continue;
+		const url = getRandomImage(slot);
+		if (url) { 
+			console.log(`[BG] Fallback found in "${slot}": ${url}`);
+			const r = { url, slot: ideal, sceneMode: SCENE_MODE }; 
+			cacheBg(r); 
+			return r; 
+		}
+	}
+
+	console.log(`[BG] No images found anywhere.`);
+	const fallback = { url: '', slot: ideal, sceneMode: SCENE_MODE };
 	cacheBg(fallback);
 	return fallback;
 }
+
+
+
+
+

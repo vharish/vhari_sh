@@ -13,28 +13,46 @@
 	let clockText = $state('');
 	const _cached = typeof sessionStorage !== 'undefined' ? getCachedBg() : null;
 	let bgUrl     = $state(_cached?.url ?? '');
-	let bgImgMode = $state<'vertical' | 'regular'>(_cached?.imgMode ?? 'regular');
 	let sceneMode = $state<'depth-layers' | 'radial-spotlight'>(_cached?.sceneMode ?? 'depth-layers');
 	let bgReady   = $state(_cached !== null);
+	let currentHour = new Date().getHours();
 
-	function updateClock() {
-		clockText = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+	async function updateBg(force = false) {
+		const resolved = await resolveBg(force);
+		if (resolved.url !== bgUrl) {
+			bgReady = false;
+			bgUrl = resolved.url;
+			sceneMode = resolved.sceneMode;
+			// Use the requested delay for the transition
+			setTimeout(() => { bgReady = true; }, 2000);
+		} else {
+			bgReady = true;
+		}
 	}
 
-	onMount(async () => {
+	function updateClock() {
+		const now = new Date();
+		clockText = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+		
+		// If the hour has changed, re-check the background
+		if (now.getHours() !== currentHour) {
+			currentHour = now.getHours();
+			updateBg(true);
+		}
+	}
+
+	onMount(() => {
 		updateClock();
 		const interval = setInterval(updateClock, 1000);
 
 		if (!_cached) {
-			const resolved = await resolveBg();
-			bgUrl     = resolved.url;
-			bgImgMode = resolved.imgMode;
-			sceneMode = resolved.sceneMode;
-			setTimeout(() => { bgReady = true; }, 2000);
+			updateBg();
 		}
 
 		return () => clearInterval(interval);
 	});
+
+
 
 	// Per-route statusbar text
 	const STATUS: Record<string, string> = {
@@ -60,9 +78,9 @@
 >
 	<div class="scene-bg-top"
 		class:ready={bgReady}
-		class:vertical={bgImgMode === 'vertical'}
 		style={bgUrl ? `background-image: url('${bgUrl}')` : ''}
 	></div>
+
 
 	<!-- CRT -->
 	<div class="crt">
@@ -218,10 +236,13 @@
 	}
 
 	.scene-bg-top {
-		position: absolute;
+		position: fixed;
 		inset: 0;
+		width: 100vw;
+		height: 100vh;
 		background-size: cover;
-		background-position: center;
+		background-position: center center;
+		background-repeat: no-repeat;
 		pointer-events: none;
 		z-index: 0;
 		opacity: 0;
@@ -229,10 +250,6 @@
 	}
 
 	.scene-bg-top.ready   { opacity: 1; }
-	.scene-bg-top.vertical {
-		background-size: auto 100%;
-		background-position: left center;
-	}
 
 	/* depth-layers overlay */
 	.mode-depth-layers::before {
