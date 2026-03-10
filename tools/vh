@@ -1,0 +1,19 @@
+#!/bin/bash
+# Reusable project tool
+# Resolve the actual directory where the script lives, even if called via a symlink
+REAL_SCRIPT_PATH=$(readlink -f "${BASH_SOURCE[0]}")
+SCRIPT_DIR=$(cd "$(dirname "$REAL_SCRIPT_PATH")" && pwd)
+ADD_PY="$SCRIPT_DIR/add.py"
+
+case "$1" in
+    music)
+        if [ "$2" == "add" ] && [ -n "$3" ]; then
+            uv run "$ADD_PY" --music "$3"
+        else
+            echo "Usage: vhari music add <URL>"
+        fi
+        ;;
+    *)
+        echo "Usage: vhari music add <URL>"
+        ;;
+esac
