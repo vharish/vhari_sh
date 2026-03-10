@@ -24,4 +24,10 @@ export const musicLibrary: MusicItem[] = [
 		url: 'https://newagedoom.bandcamp.com/album/angels-against-angels',
 		tags: ['drone', 'experimental', 'dark ambient'],
 	},
+	{
+		id: '2592622849',
+		provider: 'bandcamp',
+		url: 'https://denzelcurrymusic.bandcamp.com/album/strictly-4-the-scythe',
+		tags: ['hip-hop', 'rap', 'southern'],
+	},
 ];
