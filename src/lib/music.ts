@@ -7,6 +7,18 @@ export interface MusicItem {
 
 export const musicLibrary: MusicItem[] = [
 	{
+		id: '2614333897',
+		provider: 'bandcamp',
+		url: 'https://devilishmerry.bandcamp.com/album/the-ghost-of-his-former-self',
+		tags: ['appalachian folk', 'folk', 'irish', 'folklore fusion', 'non-traditional', 'traditional', 'pittsburgh'],
+	},
+	{
+		id: '1680418897',
+		provider: 'bandcamp',
+		url: 'https://mymorningjacket.bandcamp.com/album/peacelands',
+		tags: ['rock', 'louisville'],
+	},
+	{
 		id: '3171436298',
 		provider: 'bandcamp',
 		url: 'https://vyletpony.bandcamp.com/album/monarch-of-monsters',
