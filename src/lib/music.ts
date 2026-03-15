@@ -7,6 +7,12 @@ export interface MusicItem {
 
 export const musicLibrary: MusicItem[] = [
 	{
+		id: '4223085133',
+		provider: 'bandcamp',
+		url: 'https://modeselektor.bandcamp.com/album/classics-vol-1-we-tried-hard-and-failed-again-enjoy-2',
+		tags: ['electronic', 'monkeytown records', 'techno', 'berlin'],
+	},
+	{
 		id: '2614333897',
 		provider: 'bandcamp',
 		url: 'https://devilishmerry.bandcamp.com/album/the-ghost-of-his-former-self',
