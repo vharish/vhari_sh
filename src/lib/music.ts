@@ -7,6 +7,12 @@ export interface MusicItem {
 
 export const musicLibrary: MusicItem[] = [
 	{
+		id: '3286954184',
+		provider: 'bandcamp',
+		url: 'https://cholly.bandcamp.com/album/octopoda',
+		tags: ['alternative', 'ambient', 'electronic', 'electronica', 'alternative pop', 'chill', 'electronic music', 'pop', 'singer songwriter', 'singer-songwriter', 'trip hop', 'united kingdom'],
+	},
+	{
 		id: '4223085133',
 		provider: 'bandcamp',
 		url: 'https://modeselektor.bandcamp.com/album/classics-vol-1-we-tried-hard-and-failed-again-enjoy-2',
